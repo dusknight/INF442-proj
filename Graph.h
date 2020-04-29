@@ -8,30 +8,42 @@
 #include <vector>
 #include <string>
 #include <map>
+
+using namespace std;
+
 struct Edge{
     int u, v;
-    int w;
+    double cost;
+    Edge(int u_, int v_, double cost_);
+    static bool cmp(Edge a, Edge b);
 };
 
 class Graph {
-private:
-    int size; // size of nodes
-    vector<Edge> E;
+protected:
+    int vertSize; // size of vertex
+    int edgeSize;
 public:
-    void ReadFile(string filename);
     Graph();
-    ~Graph();
-    int getVectSize();
-    int getEdgeSize();
+//    ~Graph();
+    int getVertSize() const;
+    int getEdgeSize() const;
+    virtual void ReadFile(string filename)=0;
+    virtual double getEdgeCost(int u, int v)=0;
 };
 
-class SimpleGraph :Graph{
+class GraphInEdge :public Graph{
 private:
+    vector<Edge> edges;
+    string graphName;
 public:
-    SimpleGraph(Graph g);
-    int getWeight(int u, int v);
+    GraphInEdge();
+//    ~GraphInEdge();
+    string getGraphName() const;
+    double getEdgeCost(int u, int v);
+    bool findEdge(int u, int v);
+    void ReadFile(string filename) override;
+    int Kruskal();
 };
-
 
 
 #endif //INF442_P3_GRAPH_H
