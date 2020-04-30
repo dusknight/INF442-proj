@@ -51,7 +51,7 @@ void GraphInEdge::ReadFile(string filename) {
         cout<<"[INFO] reading graph: "<<graphName<<endl;
         // get the other lines
         while ( getline (ifs,line) ){
-            if(line.empty() or line=="\r") {
+            if(line.empty() || line=="\r") {
                 blancCount++;
                 continue;
             }
