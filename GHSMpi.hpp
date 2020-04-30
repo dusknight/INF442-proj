@@ -5,8 +5,9 @@
 #ifndef INF442_P3_GHSMPI_HPP
 #define INF442_P3_GHSMPI_HPP
 
+#include "Graph.h"
 
-class GHSMPI {
+class GHSMPI :public GraphInEdge{
 
 };
 
