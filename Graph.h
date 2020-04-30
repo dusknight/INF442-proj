@@ -32,17 +32,24 @@ public:
 };
 
 class GraphInEdge :public Graph{
+    /*
+     * Oriented Graph, implemented by a vector of edges.
+     */
 private:
     vector<Edge> edges;
     string graphName;
+    vector<int> MSTedges;
+    double MSTCost;
 public:
     GraphInEdge();
 //    ~GraphInEdge();
+    void addEdge(Edge e);
     string getGraphName() const;
-    double getEdgeCost(int u, int v);
+    double getEdgeCost(int u, int v) override;
     bool findEdge(int u, int v);
     void ReadFile(string filename) override;
-    int Kruskal();
+    double Kruskal();
+    void printMST();
 };
 
 

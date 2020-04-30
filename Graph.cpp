@@ -29,6 +29,7 @@ Graph::Graph() {vertSize=0; edgeSize=0;}
 
 GraphInEdge::GraphInEdge():Graph(){
     graphName="";
+    MSTCost = -1;
 }
 
 string GraphInEdge::getGraphName() const {return graphName;}
@@ -106,42 +107,53 @@ int findFather(vector<int> father, int x){
 }
 
 
-int GraphInEdge::Kruskal(){
+double GraphInEdge::Kruskal(){
     /*
      * Kruskal's algorithm : find MST
-     * params:
+     * Params:
      * return: sum of weights of MST
      */
-    /*
-    param
-    n:                         图的顶点个数
-    m:                         图中边的个数
-    E:                         边的集合
-    */
-    int m = edgeSize;
-    int n = vertSize;
+    MSTedges.clear();
     vector<int> father(vertSize);                                 //并查集数组
-    int ans = 0;                                           //所求边权之和
+    double ans = 0;                                           //所求边权之和
     int NumEdge = 0;                                       //记录最小生成树边数
-    for (int i = 0; i < n; i++)                            //初始化并查集
+    for (int i = 0; i < vertSize; i++)                            //初始化并查集
         father[i] = i;
     sort(edges.begin(), edges.end(), Edge::cmp);                         //所有边按边权从小到大排序
-    for (int i = 0; i < m; ++i)                            //枚举所有边
+    for (int i = 0; i < edgeSize; ++i)                            //枚举所有边
     {
         int faU = findFather(father, edges[i].u);           //查询端点u所在集合的根结点
         int faV = findFather(father, edges[i].v);           //查询端点v所在集合的根结点
-        if (faU != faV) {                               //如果不在一个集合中
+        if (faU != faV) {                                //如果不在一个集合中
             father[faU] = faV;                       //合并集合（相当于把测试边加入到最小生成树）
             ans += edges[i].cost;
             NumEdge++;                               //当前生成树边数加1
-            if (NumEdge == n - 1)                    //边数等于顶点数减1，算法结束
+            MSTedges.push_back(i);
+            if (NumEdge == vertSize - 1)                    //边数等于顶点数减1，算法结束
                 break;
         }
     }
-    if (NumEdge != n - 1)                                  //无法连通时返回-1
+    if (NumEdge != vertSize - 1)                                  //无法连通时返回-1
         return -1;
-    else
+    else{
+        MSTCost = ans;
         return ans;                                     //返回最小生成树边权之和
+    }
+
+}
+
+void GraphInEdge::printMST() {
+    for(auto i = MSTedges.begin(); i<MSTedges.end(); i++){
+        cout<<edges[*i].u<<" -- "<<edges[*i].v<<endl;
+    }
+}
+
+void GraphInEdge::addEdge(Edge e) {
+    if (findEdge(e.u, e.v)) return;
+    edges.push_back(e);
+    edgeSize ++;
+    if(e.u>vertSize) vertSize = e.u;
+    if(e.v>vertSize) vertSize = e.v;
 }
 
 
@@ -149,5 +161,14 @@ int main(){
     string filename = "test_in.txt";
     GraphInEdge gie;
     gie.ReadFile(filename);
-    cout<<gie.getGraphName();
+//    gie.addEdge(Edge(1, 2, 1));
+//    gie.addEdge(Edge(2, 3, 1));
+//    gie.addEdge(Edge(3, 4, 1));
+//    gie.addEdge(Edge(4, 5, 1));
+//    gie.addEdge(Edge(1, 3, 1));
+//    gie.addEdge(Edge(1, 4, 1));
+    cout<<gie.getGraphName()<<endl;
+    cout<<gie.Kruskal()<<endl;
+    gie.printMST();
+    return 0;
 }
