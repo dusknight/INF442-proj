@@ -166,3 +166,45 @@ make: *** [Makefile:121: cmTC_43024/fast] Error 2
 
 
 
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_da4e4/fast && /usr/bin/make -f CMakeFiles/cmTC_da4e4.dir/build.make CMakeFiles/cmTC_da4e4.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o
+/usr/bin/cc  -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"   -o CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o   -c /cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/share/cmake-3.15.3/Modules/FindMPI/test_mpi.c
+Linking C executable cmTC_da4e4.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_da4e4.dir/link.txt --verbose=1
+/usr/bin/cc    -Wl,--enable-auto-import  CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o  -o cmTC_da4e4.exe -Wl,--out-implib,libcmTC_da4e4.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_da4e4.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_da4e4.dir/build.make:87: cmTC_da4e4.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_da4e4/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_53020/fast && /usr/bin/make -f CMakeFiles/cmTC_53020.dir/build.make CMakeFiles/cmTC_53020.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o
+/usr/bin/c++.exe   -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"  -std=gnu++14 -o CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o -c /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/FindMPI/test_mpi.cpp
+Linking CXX executable cmTC_53020.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_53020.dir/link.txt --verbose=1
+/usr/bin/c++.exe    -Wl,--enable-auto-import  CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o  -o cmTC_53020.exe -Wl,--out-implib,libcmTC_53020.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_53020.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_53020.dir/build.make:87: cmTC_53020.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_53020/fast] Error 2
+
+
+
