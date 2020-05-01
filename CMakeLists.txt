@@ -9,11 +9,11 @@ add_executable(test Graph.h Graph.cpp )
 
 add_executable(task3-master Graph.h GraphMpi.hpp
     Graph.cpp GraphMpi.cpp)
-target_link_libraries(task4-master ${MPI_LIBRARIES})
+target_link_libraries(task3-master ${MPI_LIBRARIES})
 
 add_executable(task3-worker Graph.h GraphMpi.hpp
     Graph.cpp GraphMpi.cpp)
-target_link_libraries(task4-worker ${MPI_LIBRARIES})
+target_link_libraries(task3-worker ${MPI_LIBRARIES})
 
 add_executable(task4-master Graph.h GraphMpi.hpp GHSMpi.hpp
     Graph.cpp GraphMpi.cpp GHSMpi.cpp )

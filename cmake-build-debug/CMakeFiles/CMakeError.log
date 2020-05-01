@@ -1,0 +1,168 @@
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_470be/fast && /usr/bin/make -f CMakeFiles/cmTC_470be.dir/build.make CMakeFiles/cmTC_470be.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_470be.dir/test_mpi.c.o
+/usr/bin/cc  -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"   -o CMakeFiles/cmTC_470be.dir/test_mpi.c.o   -c /cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/share/cmake-3.15.3/Modules/FindMPI/test_mpi.c
+Linking C executable cmTC_470be.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_470be.dir/link.txt --verbose=1
+/usr/bin/cc    -Wl,--enable-auto-import  CMakeFiles/cmTC_470be.dir/test_mpi.c.o  -o cmTC_470be.exe -Wl,--out-implib,libcmTC_470be.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_470be.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_470be.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_470be.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_470be.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_470be.dir/build.make:87: cmTC_470be.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_470be/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_f1346/fast && /usr/bin/make -f CMakeFiles/cmTC_f1346.dir/build.make CMakeFiles/cmTC_f1346.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o
+/usr/bin/c++.exe   -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"  -std=gnu++14 -o CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o -c /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/FindMPI/test_mpi.cpp
+Linking CXX executable cmTC_f1346.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_f1346.dir/link.txt --verbose=1
+/usr/bin/c++.exe    -Wl,--enable-auto-import  CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o  -o cmTC_f1346.exe -Wl,--out-implib,libcmTC_f1346.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_f1346.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_f1346.dir/build.make:87: cmTC_f1346.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_f1346/fast] Error 2
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_f47fb/fast && /usr/bin/make -f CMakeFiles/cmTC_f47fb.dir/build.make CMakeFiles/cmTC_f47fb.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o
+/usr/bin/cc  -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"   -o CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o   -c /cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/share/cmake-3.15.3/Modules/FindMPI/test_mpi.c
+Linking C executable cmTC_f47fb.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_f47fb.dir/link.txt --verbose=1
+/usr/bin/cc    -Wl,--enable-auto-import  CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o  -o cmTC_f47fb.exe -Wl,--out-implib,libcmTC_f47fb.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_f47fb.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_f47fb.dir/build.make:87: cmTC_f47fb.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_f47fb/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_6bae0/fast && /usr/bin/make -f CMakeFiles/cmTC_6bae0.dir/build.make CMakeFiles/cmTC_6bae0.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o
+/usr/bin/c++.exe   -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"  -std=gnu++14 -o CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o -c /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/FindMPI/test_mpi.cpp
+Linking CXX executable cmTC_6bae0.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_6bae0.dir/link.txt --verbose=1
+/usr/bin/c++.exe    -Wl,--enable-auto-import  CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o  -o cmTC_6bae0.exe -Wl,--out-implib,libcmTC_6bae0.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_6bae0.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_6bae0.dir/build.make:87: cmTC_6bae0.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_6bae0/fast] Error 2
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_4aea8/fast && /usr/bin/make -f CMakeFiles/cmTC_4aea8.dir/build.make CMakeFiles/cmTC_4aea8.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o
+/usr/bin/cc  -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"   -o CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o   -c /cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/share/cmake-3.15.3/Modules/FindMPI/test_mpi.c
+Linking C executable cmTC_4aea8.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_4aea8.dir/link.txt --verbose=1
+/usr/bin/cc    -Wl,--enable-auto-import  CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o  -o cmTC_4aea8.exe -Wl,--out-implib,libcmTC_4aea8.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_4aea8.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_4aea8.dir/build.make:87: cmTC_4aea8.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_4aea8/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_a05d4/fast && /usr/bin/make -f CMakeFiles/cmTC_a05d4.dir/build.make CMakeFiles/cmTC_a05d4.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o
+/usr/bin/c++.exe   -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"  -std=gnu++14 -o CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o -c /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/FindMPI/test_mpi.cpp
+Linking CXX executable cmTC_a05d4.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_a05d4.dir/link.txt --verbose=1
+/usr/bin/c++.exe    -Wl,--enable-auto-import  CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o  -o cmTC_a05d4.exe -Wl,--out-implib,libcmTC_a05d4.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_a05d4.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_a05d4.dir/build.make:87: cmTC_a05d4.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_a05d4/fast] Error 2
+
+
+
+The MPI test test_mpi for C in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_575b2/fast && /usr/bin/make -f CMakeFiles/cmTC_575b2.dir/build.make CMakeFiles/cmTC_575b2.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_575b2.dir/test_mpi.c.o
+/usr/bin/cc  -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"   -o CMakeFiles/cmTC_575b2.dir/test_mpi.c.o   -c /cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/share/cmake-3.15.3/Modules/FindMPI/test_mpi.c
+Linking C executable cmTC_575b2.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_575b2.dir/link.txt --verbose=1
+/usr/bin/cc    -Wl,--enable-auto-import  CMakeFiles/cmTC_575b2.dir/test_mpi.c.o  -o cmTC_575b2.exe -Wl,--out-implib,libcmTC_575b2.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_575b2.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_575b2.dir/test_mpi.c.o:test_mpi.c:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_575b2.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_575b2.dir/test_mpi.c.o:test_mpi.c:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_575b2.dir/build.make:87: cmTC_575b2.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_575b2/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make.exe cmTC_43024/fast && /usr/bin/make -f CMakeFiles/cmTC_43024.dir/build.make CMakeFiles/cmTC_43024.dir/build
+make[1]: Entering directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o
+/usr/bin/c++.exe   -isystem "/cygdrive/c/Program Files (x86)/IntelSWTools/compilers_and_libraries_2020.1.216/windows/mpi/intel64/include"  -std=gnu++14 -o CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o -c /cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/FindMPI/test_mpi.cpp
+Linking CXX executable cmTC_43024.exe
+/cygdrive/c/Users/Shikang/.CLion2019.3/system/cygwin_cmake/bin/cmake.exe -E cmake_link_script CMakeFiles/cmTC_43024.dir/link.txt --verbose=1
+/usr/bin/c++.exe    -Wl,--enable-auto-import  CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o  -o cmTC_43024.exe -Wl,--out-implib,libcmTC_43024.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): undefined reference to `MPI_Init'
+CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x2c): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Init'
+/usr/lib/gcc/x86_64-pc-cygwin/9.3.0/../../../../x86_64-pc-cygwin/bin/ld: CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): undefined reference to `MPI_Finalize'
+CMakeFiles/cmTC_43024.dir/test_mpi.cpp.o:test_mpi.cpp:(.text+0x31): relocation truncated to fit: R_X86_64_PC32 against undefined symbol `MPI_Finalize'
+collect2: error: ld returned 1 exit status
+make[1]: *** [CMakeFiles/cmTC_43024.dir/build.make:87: cmTC_43024.exe] Error 1
+make[1]: Leaving directory '/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/CMakeTmp'
+make: *** [Makefile:121: cmTC_43024/fast] Error 2
+
+
+
