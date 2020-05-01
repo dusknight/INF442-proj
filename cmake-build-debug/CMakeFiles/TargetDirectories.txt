@@ -1,3 +1,0 @@
-/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/test.dir
-/cygdrive/c/Users/Shikang/CLionProjects/INF442-proj/cmake-build-debug/CMakeFiles/edit_cache.dir

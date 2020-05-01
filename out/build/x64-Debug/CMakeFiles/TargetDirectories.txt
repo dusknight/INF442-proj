@@ -1,7 +1,0 @@
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/task4-worker.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/task4-master.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/test.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/task3-worker.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/task3-master.dir
-C:/Users/Shikang/CLionProjects/INF442-proj/out/build/x64-Debug/CMakeFiles/edit_cache.dir
