@@ -90,7 +90,7 @@ double GraphInEdge::getEdgeCost(int u, int v) {
 }
 
 
-int findFather(vector<int> father, int x){
+int findFather(vector<int> &father, int x){
     /*
      * Union-Find
      * return the root of Union-find set where x belongs
@@ -114,10 +114,10 @@ double GraphInEdge::Kruskal(){
      * return: sum of weights of MST
      */
     MSTedges.clear();
-    vector<int> father(vertSize);                                 //并查集数组
+    vector<int> father(vertSize+1);                         //并查集数组, starts from 1 to vertSize+1
     double ans = 0;                                           //所求边权之和
     int NumEdge = 0;                                       //记录最小生成树边数
-    for (int i = 0; i < vertSize; i++)                            //初始化并查集
+    for (int i = 0; i < vertSize+1; i++)                            //初始化并查集
         father[i] = i;
     sort(edges.begin(), edges.end(), Edge::cmp);                         //所有边按边权从小到大排序
     for (int i = 0; i < edgeSize; ++i)                            //枚举所有边
