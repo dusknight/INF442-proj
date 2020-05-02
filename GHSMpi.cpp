@@ -3,6 +3,9 @@
 //
 
 #include "GHSMpi.hpp"
+#include "GraphMpi.hpp"
+
+#include<iostream>
 
 using namespace std;
 
