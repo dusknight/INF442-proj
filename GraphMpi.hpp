@@ -6,6 +6,7 @@
 #define INF442_P3_GRAPHMPI_HPP
 
 #include <mpi.h>
+
 #define MASTER_RANK 0
 
 class Communicator {

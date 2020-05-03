@@ -9,6 +9,17 @@
 
 using namespace std;
 
+void GHSNode::WakeUp() {
+    // let m be adjacent edge if minimum weight;
+    SE[m] = GHSEdge::EdgeState::BRANCH;
+    LN = 0;
+    SN = NodeState::FOUND;
+    find_count = 0;
+    
+    // send Connect(0) on edge m;
+    // comm.send
+}
+
 int main(int argc, char* argv[]) {
     ios_base::sync_with_stdio(false);
 
@@ -67,4 +78,12 @@ int main(int argc, char* argv[]) {
 
     comm.release();
     return 0;
+}
+
+GHSmsg GHScomm::Connect(int nodeId)
+{
+    GHSmsg msg;
+    msg.type = MsgType::CONNECT;
+    msg.arg1 = nodeId;
+    return msg;
 }

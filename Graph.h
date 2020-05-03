@@ -35,22 +35,42 @@ class GraphInEdge :public Graph{
     /*
      * Oriented Graph, implemented by a vector of edges.
      */
-private:
+protected:
     vector<Edge> edges;
     string graphName;
-    vector<int> MSTedges;
-    double MSTCost;
+    friend class KruskalSolver;
 public:
     GraphInEdge();
+    GraphInEdge(GraphInEdge &gie);
 //    ~GraphInEdge();
     void addEdge(Edge e);
     string getGraphName() const;
     double getEdgeCost(int u, int v) override;
     bool findEdge(int u, int v);
     void ReadFile(string filename) override;
-    double Kruskal();
-    void printMST();
 };
 
+class MSTSolver {
+private:
+    Graph* graph;
+public:
+    virtual double CalcMST()=0;
+    virtual void printMST()=0;
+    virtual void ReadFile(string filename) = 0;
+};
+
+class KruskalSolver :public MSTSolver {
+private:
+    GraphInEdge *graph;
+    vector<int> MSTedges;
+    double MSTCost;
+public :
+    KruskalSolver();
+    ~KruskalSolver();
+    KruskalSolver(GraphInEdge *graph);
+    void ReadFile(string filename);
+    double CalcMST() override;
+    void printMST() override;
+};
 
 #endif //INF442_P3_GRAPH_H
