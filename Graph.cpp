@@ -216,29 +216,29 @@ void KruskalSolver::printMST()
     }
 }
 
-PrimeSolver::PrimeSolver()
+PrimSolver::PrimSolver()
 {
     graph = new GraphInEdge();
     MSTCost = -1;
 }
 
-PrimeSolver::~PrimeSolver()
+PrimSolver::~PrimSolver()
 {
     delete graph;
 }
 
-PrimeSolver::PrimeSolver(GraphInEdge* graph)
+PrimSolver::PrimSolver(GraphInEdge* graph)
 {
     this->graph = graph;
     MSTCost = -1;
 }
 
-void PrimeSolver::ReadFile(string filename)
+void PrimSolver::ReadFile(string filename)
 {
     graph->ReadFile(filename);
 }
 
-double PrimeSolver::CalcMST()
+double PrimSolver::CalcMST()
 {
     /*
      * Prime's algorithm : find MST
@@ -256,10 +256,17 @@ double PrimeSolver::CalcMST()
     int index = 0;
     int index_copy = 0; //检查有没有更新index
     int startpoint = 0;                         // 以顶点0作为出发点
-    bool visited[taille] = {1};                     // 初始化访问过的节点的记录
+    vector<bool> visited = { 1 };
+    for (int i = 1; i < taille; i++) {          // 初始化访问过的节点的记录
+        visited.push_back(0);
+    }       
+    vector<double> costs;            // 初始化与访问过的节点邻接的距离的记录
+    vector<int> closest;            // 初始化 每一节点到已访问过的节点中最近节点的指标
+    for (int i = 0; i < taille; i++) {
+        costs.push_back(0);
+        closest.push_back(0);
+    }
 
-	double costs[taille] = {0,};            // 初始化与访问过的节点邻接的距离的记录
-    int closest[taille] = { 0, };               // 初始化 每一节点到已访问过的节点中最近节点的指标
     for(int i = 1; i<taille; i++)
     {
 	    if(graph->findEdge(0, i))
@@ -322,7 +329,7 @@ double PrimeSolver::CalcMST()
     
 }
 
-void PrimeSolver::printMST()
+void PrimSolver::printMST()
 {
     for (auto i = MSTedges.begin(); i < MSTedges.end(); i++) {
         cout << graph->edges[*i].u << " -- " << graph->edges[*i].v << endl;
@@ -341,9 +348,10 @@ int main() {
     //    gie.addEdge(Edge(1, 4, 1));
     cout << gie->getGraphName() << endl;
 
-    KruskalSolver Kruskal(gie);
+    // KruskalSolver Kruskal(gie);
+    PrimSolver prim(gie);
 
-    cout << Kruskal.CalcMST() << endl;
-    Kruskal.printMST();
+    cout << prim.CalcMST() << endl;
+    prim.printMST();
     return 0;
 }

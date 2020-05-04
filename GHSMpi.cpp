@@ -17,7 +17,7 @@ void GHSNode::WakeUp() {
     find_count = 0;
     
     // send Connect(0) on edge m;
-    // comm.send
+    comm.send.emplace(best_edge, msg);
 }
 
 int main(int argc, char* argv[]) {

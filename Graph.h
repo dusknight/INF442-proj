@@ -39,7 +39,7 @@ protected:
     vector<Edge> edges;
     string graphName;
     friend class KruskalSolver;
-    friend class PrimeSolver;
+    friend class PrimSolver;
 public:
     GraphInEdge();
     GraphInEdge(GraphInEdge &gie);
@@ -74,15 +74,15 @@ public :
     void printMST() override;
 };
 
-class PrimeSolver :public MSTSolver {
+class PrimSolver :public MSTSolver {
 private:
     GraphInEdge* graph;
     vector<int> MSTedges;
     double MSTCost;
 public:
-    PrimeSolver();
-    ~PrimeSolver();
-    PrimeSolver(GraphInEdge* graph);
+    PrimSolver();
+    ~PrimSolver();
+    PrimSolver(GraphInEdge* graph);
     void ReadFile(string filename);
     double CalcMST() override;
     void printMST() override;

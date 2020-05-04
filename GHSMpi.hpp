@@ -89,6 +89,7 @@ private:
 	int id;
 
 	NodeState SN;  // state
+	vector<GHSEdge::EdgeState> SE;
 	int FN;  // fragemnt identity
 	int LN;  // level
 	int find_count;
