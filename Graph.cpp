@@ -12,7 +12,7 @@
 
 #include "Graph.h"
 
-#define INF 100000
+#define INF 1000000
 using namespace std;
 
 
@@ -52,7 +52,7 @@ while (i<l)
 	{
 		if (edges[i].v == v)
 		{
-			std::cout << "The edge is located in "<< i <<"th position in edges"<<std::endl;
+			//std::cout << "The edge is located in "<< i <<"th position in edges"<<std::endl;
 			return i;
 		}
 	}
@@ -265,7 +265,7 @@ double PrimSolver::CalcMST()
     vector<int> closest;            // 初始化 每一节点到已访问过的节点中最近节点的指标
     for (int i = 0; i < taille+1; i++) {
         costs.push_back(0);
-        closest.push_back(0);
+        closest.push_back(1);
     }
 
 	//cout << graph->findEdge(0, 2);
@@ -284,7 +284,7 @@ double PrimSolver::CalcMST()
     //    cout << costs[i] << endl;
     //}
 
-	for(int i = 1; i<taille; i++)               //遍历节点
+	for(int i = 1; i<taille; i++)               //遍历节点（最后一个不必遍历）
 	{
         int cur = 1;
         double minor = INF;
@@ -309,14 +309,18 @@ double PrimSolver::CalcMST()
         //int index_edge = graph->findEdge(index, closest[index-1]);
 		
         visited[cur] = true;
+        // cout << cur << "cur" << endl;
         int edge_number = 0;
 		if(graph->getEdgeCost(cur, closest[cur]) > graph->getEdgeCost(closest[cur],cur))
 		{
             edge_number = graph->findEdge(closest[cur], cur);
+            //cout << 'A' << endl;
 		}else
 		{
             edge_number = graph->findEdge(cur, closest[cur]);
+            //cout << graph->getEdgeCost(cur, closest[cur]) << 'B' << graph->getEdgeCost(closest[cur], cur)<< endl;
 		}
+        //cout << edge_number << endl;
         MSTedges.push_back(edge_number);
         
         ans += minor;
@@ -329,7 +333,7 @@ double PrimSolver::CalcMST()
 			}
 		}
 
-        cout << "LOOP " << i << endl;
+        //cout << "LOOP " << i << endl;
 		
 		//for(int j =1; j<taille+1;j++)
 		//{
