@@ -165,6 +165,19 @@ int findFather(vector<int>& father, int x)
 	return x;
 }
 
+bool is_element_in_vector(vector<int> v, int element)
+{
+	vector<int> ::iterator it;
+	it = find(v.begin(), v.end(), element);
+	if(it!=v.end())
+	{
+		return true;
+	}else
+	{
+		return false;
+	}
+}
+
 void GraphInEdge::addEdge(Edge e)
 {
 	if (findEdge(e.u, e.v)) return;
@@ -393,15 +406,16 @@ double BoruvkaSolver::CalcMST()
 
 	int NumCompos = graph->getVertSize() + 1; //连通分支数目+1
 
-
-	while (NumCompos > 2)
+	int it_count = 0;
+	vector<int> edges_mst = {};
+	while (NumCompos > 2) //当分支数目大于等于2
 	{
 		vector<int> temp ={};
 		for (int i=0; i < graph->getVertSize() + 1; i++)
 		{
 			temp.push_back(findFather(father, i));
 		}
-		std::unordered_multiset<int> setcomponents(temp.begin(), temp.end()); //存储目前的分支
+		std::unordered_set<int> setcomponents(temp.begin(), temp.end()); //存储目前的分支
 		vector<int> components(setcomponents.begin(), setcomponents.end());
 		NumCompos = components.size();
 
@@ -451,22 +465,36 @@ double BoruvkaSolver::CalcMST()
 					int Indu = findFather(father, graph->edges[cheapest[cur]].u);
 					int Indv = findFather(father, graph->edges[cheapest[cur]].v);
 					father[Indu] = Indv;
-					MSTedges.push_back(cheapest[cur]);
-					NumEdge += 1;
-					ans += graph->edges[cheapest[cur]].cost;
+					if(!is_element_in_vector(edges_mst,cheapest[cur])) // 确认之前未加入，Boruvka算法的每一轮可能加入重复的边。
+					{
+						MSTedges.push_back(cheapest[cur]);
+						edges_mst.push_back(cheapest[cur]);
+						ans += graph->edges[cheapest[cur]].cost;
+						NumEdge += 1;
+					}
 				}
 			}
 		}
+
+
 
 		vector<int> temp2 = {};
 		for (int i=0; i < graph->getVertSize() + 1; i++)
 		{
 			temp2.push_back(findFather(father, i));
 		}
-		std::unordered_multiset<int> setcomponents2(temp2.begin(), temp2.end()); //存储目前的分支
+		//vector<int>::iterator ite = temp2.begin();
+		//for(; ite!=temp2.end(); ite++)
+		//{
+		//	cout << *ite << endl;
+		//}		
+		std::unordered_set<int> setcomponents2(temp2.begin(), temp2.end()); //更新存储目前的分支
 		vector<int> components2(setcomponents2.begin(), setcomponents2.end());
-		NumCompos = components2.size();
-		
+		NumCompos = components2.size();//更新分支数目
+
+		//cout <<'a' <<NumCompos <<'a'<< endl;
+		//cout << "LOOP" << endl;
+		//break;
 	}
 	MSTCost = ans;
 	return ans;
@@ -504,5 +532,6 @@ int main()
 	//
 	BoruvkaSolver boruv(gie);
 	cout << boruv.CalcMST() << endl;
+	boruv.printMST();
 	return 0;
 }
