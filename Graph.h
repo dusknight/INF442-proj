@@ -40,6 +40,7 @@ protected:
     string graphName;
     friend class KruskalSolver;
     friend class PrimSolver;
+    friend class BoruvkaSolver;
 public:
     GraphInEdge();
     GraphInEdge(GraphInEdge &gie);
@@ -83,6 +84,20 @@ public:
     PrimSolver();
     ~PrimSolver();
     PrimSolver(GraphInEdge* graph);
+    void ReadFile(string filename);
+    double CalcMST() override;
+    void printMST() override;
+};
+
+class BoruvkaSolver: public MSTSolver{
+private:
+    GraphInEdge* graph;
+    vector<int> MSTedges;
+    double MSTCost;
+public:
+    BoruvkaSolver();
+    ~BoruvkaSolver();
+    BoruvkaSolver(GraphInEdge * graph);
     void ReadFile(string filename);
     double CalcMST() override;
     void printMST() override;
