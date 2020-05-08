@@ -20,7 +20,7 @@ using namespace std;
 
 const double DEFAULT_COST = 1;
 
-Edge::Edge(int u_, int v_, double cost_): u(u_), v(v_), cost(cost_)
+Edge::Edge(int u_, int v_, double cost_) : u(u_), v(v_), cost(cost_)
 {
 }
 
@@ -39,7 +39,7 @@ Graph::Graph()
 }
 
 
-GraphInEdge::GraphInEdge(): Graph()
+GraphInEdge::GraphInEdge() : Graph()
 {
 	graphName = "";
 }
@@ -98,7 +98,7 @@ void GraphInEdge::ReadFile(string filename)
 				if (line.length() < 2) continue; // if is not edge;
 				istringstream iss(line);
 				vector<string> results((istream_iterator<std::string>(iss)),
-				                       istream_iterator<std::string>());
+					istream_iterator<std::string>());
 				node_u = stoi(results.front());
 				if (node_u > vertCount) vertCount = node_u;
 				//                int level = stoi(results[1]);
@@ -169,10 +169,11 @@ bool is_element_in_vector(vector<int> v, int element)
 {
 	vector<int> ::iterator it;
 	it = find(v.begin(), v.end(), element);
-	if(it!=v.end())
+	if (it != v.end())
 	{
 		return true;
-	}else
+	}
+	else
 	{
 		return false;
 	}
@@ -180,9 +181,9 @@ bool is_element_in_vector(vector<int> v, int element)
 
 void GraphInEdge::addEdge(Edge e)
 {
-	if (findEdge(e.u, e.v)) return;
+	if (findEdge(e.u, e.v) != -1) return;
 	edges.push_back(e);
-	edgeSize ++;
+	edgeSize++;
 	if (e.u > vertSize) vertSize = e.u;
 	if (e.v > vertSize) vertSize = e.v;
 }
@@ -196,7 +197,7 @@ KruskalSolver::KruskalSolver()
 
 KruskalSolver::~KruskalSolver()
 {
-	delete graph;
+	// delete graph;
 }
 
 KruskalSolver::KruskalSolver(GraphInEdge* graph)
@@ -264,7 +265,7 @@ PrimSolver::PrimSolver()
 
 PrimSolver::~PrimSolver()
 {
-	delete graph;
+	// delete graph;
 }
 
 PrimSolver::PrimSolver(GraphInEdge* graph)
@@ -290,7 +291,7 @@ double PrimSolver::CalcMST()
 	const int taille = graph->getVertSize();
 
 	int startpoint = 0; // 以顶点0作为出发点
-	vector<bool> visited = {0, 1,};
+	vector<bool> visited = { 0, 1, };
 	for (int i = 1; i < taille; i++)
 	{
 		// 初始化访问过的节点的记录
@@ -303,13 +304,13 @@ double PrimSolver::CalcMST()
 		costs.push_back(0);
 		closest.push_back(1);
 	}
-	
+
 	for (int i = 2; i < taille + 1; i++) //初始化costs
 	{
 		costs[i] = min(graph->getEdgeCost(1, i), graph->getEdgeCost(i, 1));
 	}
 
-	
+
 	for (int i = 1; i < taille; i++) //遍历节点（最后一个不必遍历）
 	{
 		int cur = 1;  //初始化要加入的下一个顶点的index
@@ -371,7 +372,7 @@ BoruvkaSolver::BoruvkaSolver()
 
 BoruvkaSolver::~BoruvkaSolver()
 {
-	delete graph;
+	// delete graph;
 }
 
 BoruvkaSolver::BoruvkaSolver(GraphInEdge* graph)
@@ -403,15 +404,14 @@ double BoruvkaSolver::CalcMST()
 
 	vector<int> cheapest(graph->getVertSize() + 1);//每个components在当前步要加入的边
 
-
 	int NumCompos = graph->getVertSize() + 1; //连通分支数目+1
 
 	int it_count = 0;
 	vector<int> edges_mst = {};
 	while (NumCompos > 2) //当分支数目大于等于2
 	{
-		vector<int> temp ={};
-		for (int i=0; i < graph->getVertSize() + 1; i++)
+		vector<int> temp = {};
+		for (int i = 0; i < graph->getVertSize() + 1; i++)
 		{
 			temp.push_back(findFather(father, i));
 		}
@@ -428,7 +428,7 @@ double BoruvkaSolver::CalcMST()
 			int cost = graph->edges[i].cost;
 			if (faU != faV)
 			{
-				
+
 				if (cheapest[faU] == -1) //work on the component of U
 				{
 					cheapest[faU] = i;
@@ -465,7 +465,7 @@ double BoruvkaSolver::CalcMST()
 					int Indu = findFather(father, graph->edges[cheapest[cur]].u);
 					int Indv = findFather(father, graph->edges[cheapest[cur]].v);
 					father[Indu] = Indv;
-					if(!is_element_in_vector(edges_mst,cheapest[cur])) // 确认之前未加入，Boruvka算法的每一轮可能加入重复的边。
+					if (!is_element_in_vector(edges_mst, cheapest[cur])) // 确认之前未加入，Boruvka算法的每一轮可能加入重复的边。
 					{
 						MSTedges.push_back(cheapest[cur]);
 						edges_mst.push_back(cheapest[cur]);
@@ -479,22 +479,16 @@ double BoruvkaSolver::CalcMST()
 
 
 		vector<int> temp2 = {};
-		for (int i=0; i < graph->getVertSize() + 1; i++)
+		for (int i = 0; i < graph->getVertSize() + 1; i++)
 		{
 			temp2.push_back(findFather(father, i));
 		}
-		//vector<int>::iterator ite = temp2.begin();
-		//for(; ite!=temp2.end(); ite++)
-		//{
-		//	cout << *ite << endl;
-		//}		
+	
 		std::unordered_set<int> setcomponents2(temp2.begin(), temp2.end()); //更新存储目前的分支
 		vector<int> components2(setcomponents2.begin(), setcomponents2.end());
 		NumCompos = components2.size();//更新分支数目
 
-		//cout <<'a' <<NumCompos <<'a'<< endl;
-		//cout << "LOOP" << endl;
-		//break;
+
 	}
 	MSTCost = ans;
 	return ans;
@@ -512,16 +506,16 @@ int main()
 {
 	string filename = "test_in.txt";
 	GraphInEdge* gie = new GraphInEdge();
-	gie->ReadFile(filename);
-	//gie->addEdge(Edge(1, 2, 1));
-	//gie->addEdge(Edge(2, 3, 1));
-	//gie->addEdge(Edge(3, 1, 1));
-	//    gie.addEdge(Edge(4, 5, 1));
-	//    gie.addEdge(Edge(1, 3, 1));
-	//    gie.addEdge(Edge(1, 4, 1));
+	// gie->ReadFile(filename);
+	gie->addEdge(Edge(1, 2, 2));
+	gie->addEdge(Edge(2, 3, 1));
+	gie->addEdge(Edge(3, 1, 2));
+	gie->addEdge(Edge(4, 5, 1));
+	gie->addEdge(Edge(1, 3, 3));
+	gie->addEdge(Edge(1, 4, 1));
 	cout << gie->getGraphName() << endl;
 
-	//KruskalSolver Kruskal(gie);
+	KruskalSolver Kruskal(gie);
 	//cout << Kruskal.CalcMST() << endl;
 	//Kruskal.printMST();
 
@@ -531,7 +525,11 @@ int main()
 	//prim.printMST();
 	//
 	BoruvkaSolver boruv(gie);
-	cout << boruv.CalcMST() << endl;
+	PrimSolver prim(gie);
+
+	cout << boruv.CalcMST() << prim.CalcMST() << Kruskal.CalcMST() << endl;
+	prim.printMST();
 	boruv.printMST();
+	Kruskal.printMST();
 	return 0;
 }

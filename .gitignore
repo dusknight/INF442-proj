@@ -30,6 +30,7 @@
 *.exe
 *.out
 *.app
+
 /.vs/
 /cmake-build-debug/
 /out/
