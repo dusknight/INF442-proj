@@ -17,6 +17,7 @@ struct Edge {
 	int u, v;
 	double cost;
 	Edge(int u_, int v_, double cost_);
+	Edge(const Edge &e);
 	static bool cmp(Edge a, Edge b);
 };
 

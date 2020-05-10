@@ -17,6 +17,12 @@ struct GHSEdge :public Edge {
 	GHSEdge(int u_, int v_, double cost_, EdgeState es_) :Edge(u_, v_, cost_) {
 		state = es_;
 	}
+	GHSEdge(Edge e, EdgeState es_) :Edge(e) {
+		state = es_;
+	}
+	GHSEdge(Edge e) :Edge(e) {
+		state = BASIC;
+	}
 };
 
 enum MsgType {
@@ -80,10 +86,14 @@ public:
 	GHSmsg sendInitiate(int LN, int FN, GHSNode::NodeState SN, int edgeId);
 
 	GHSmsg sendTest(int LN, int FN, int edgeId);
+	GHSmsg recvTest(int L, int F, int edgeId);
+
+	GHSmsg sendAccept(int edgeId);
 
 	GHSmsg sendReject(int edgeId);
 
 	GHSmsg sendReport(double best_weight, int in_branch);
+	GHSmsg recvReport(double in_weight, int edgeId);
 
 	GHSmsg sendChangeCore(int edgeId);
 
@@ -96,13 +106,15 @@ class GHSNode : public GraphInEdge {
 	* for reference and algorithm details
 	**/
 protected:
+public:
+	static const enum NodeState { SLEEPING = 0, FIND, FOUND };
 	
-	static const enum NodeState{SLEEPING=0, FIND, FOUND};
 private:
 
-	friend class GHScomm;
+	// friend class GHScomm;
 
 	int id;
+	bool finished;
 
 	NodeState SN;  // state
 	vector<GHSEdge::EdgeState> SE;
@@ -115,16 +127,22 @@ private:
 
 	std::vector<GHSEdge> edges;  // ???
 
-	//
+	// for Test
 	int best_edge;
 
 	//
 	int in_branch;
 
+	//
+	int test_edge;
+
 public:
+
 	GHSNode(vector<Edge> edges);
 
-	int find_min_weight_adjacent_edge();
+	int find_best_edge();
+
+	int find_test_edge();
 
 	void WakeUp();
 
@@ -139,11 +157,10 @@ public:
 
 	void RespReject(int edge_id);
 
-	void Report(int edge_id);
+	void Report();
 	void RespReport(int w, int edge_id);
 
 	void ChangeCore();
-
 	void RespChangeCore();
 };
 
@@ -151,5 +168,12 @@ class GHSMPI :public GraphInEdge{
 
 };
 
+#include <queue>
+#include <unordered_map>
+class GHS {
+private:
+	GHSNode local_nodes;
+	std::unordered_map<Edge, std::queue<>> message_map;
+};
 
 #endif //INF442_P3_GHSMPI_HPP
