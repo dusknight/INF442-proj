@@ -74,7 +74,19 @@ public:
 		if (f != nullptr) MPI_Op_create(f, 1, &op);
 	}
 
-	GHSmsg Connect(int nodeId);
+	GHSmsg sendConnect(int val, int edgeId);
+	GHSmsg recvConnect(int LN);
+
+	GHSmsg sendInitiate(int LN, int FN, GHSNode::NodeState SN, int edgeId);
+
+	GHSmsg sendTest(int LN, int FN, int edgeId);
+
+	GHSmsg sendReject(int edgeId);
+
+	GHSmsg sendReport(double best_weight, int in_branch);
+
+	GHSmsg sendChangeCore(int edgeId);
+
 };
 
 
@@ -84,8 +96,12 @@ class GHSNode : public GraphInEdge {
 	* for reference and algorithm details
 	**/
 protected:
+	
 	static const enum NodeState{SLEEPING=0, FIND, FOUND};
 private:
+
+	friend class GHScomm;
+
 	int id;
 
 	NodeState SN;  // state
@@ -99,12 +115,20 @@ private:
 
 	std::vector<GHSEdge> edges;  // ???
 
+	//
+	int best_edge;
+
+	//
+	int in_branch;
+
 public:
 	GHSNode(vector<Edge> edges);
 
+	int find_min_weight_adjacent_edge();
+
 	void WakeUp();
 
-	void RespInit(int L, int F, int S, int edge_id);
+	void RespInit(int L, int F, GHSNode::NodeState S, int edge_id);
 
 	void RespConnect(int level, int edge_id);
 

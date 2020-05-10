@@ -5,7 +5,9 @@ set(CMAKE_CXX_STANDARD 14)
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 
-add_executable(test Graph.h Graph.cpp )
+add_executable(task1 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task1.cpp)
+
+add_executable(task2 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task2.cpp)
 
 add_executable(task3-master Graph.h GraphMpi.hpp
     Graph.cpp GraphMpi.cpp)

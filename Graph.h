@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 
+constexpr auto INF = 1000000;
+
 using namespace std;
 
 struct Edge {
@@ -61,46 +63,7 @@ public:
 	virtual void ReadFile(string filename) = 0;
 };
 
-class KruskalSolver :public MSTSolver {
-private:
-	GraphInEdge* graph;
-	vector<int> MSTedges;
-	double MSTCost;
-public:
-	KruskalSolver();
-	~KruskalSolver();
-	KruskalSolver(GraphInEdge* graph);
-	void ReadFile(string filename);
-	double CalcMST() override;
-	void printMST() override;
-};
-
-class PrimSolver :public MSTSolver {
-private:
-	GraphInEdge* graph;
-	vector<int> MSTedges;
-	double MSTCost;
-public:
-	PrimSolver();
-	~PrimSolver();
-	PrimSolver(GraphInEdge* graph);
-	void ReadFile(string filename);
-	double CalcMST() override;
-	void printMST() override;
-};
-
-class BoruvkaSolver : public MSTSolver {
-private:
-	GraphInEdge* graph;
-	vector<int> MSTedges;
-	double MSTCost;
-public:
-	BoruvkaSolver();
-	~BoruvkaSolver();
-	BoruvkaSolver(GraphInEdge* graph);
-	void ReadFile(string filename);
-	double CalcMST() override;
-	void printMST() override;
-};
+int findFather(vector<int>& father, int x);
+bool is_element_in_vector(vector<int> v, int element);
 
 #endif //INF442_P3_GRAPH_H
