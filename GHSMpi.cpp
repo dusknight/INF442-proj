@@ -202,6 +202,44 @@ void GHSNode::RespChangeCore()
     ChangeCore();
 }
 
+bool GHSNode::isFinished()
+{
+    return finished || merge_condition() || absorb_condition() ||
+        test_reply_condition() || report_condition() || fragment_connect_condition();
+}
+
+void GHSNode::Finish()
+{
+    comm.finalise();
+}
+
+void GHSNode::RUN(int argc, char* argv[])
+{
+    string filename = "test_in.txt";
+    comm.init(&argc, &argv); // MPI_Init
+
+    int num_process, my_rank;
+    MPI_Comm_size(comm.comm, &num_process);
+    MPI_Comm_rank(comm.comm, &my_rank);
+    // rank from 0 to N-1
+
+
+    // read_file
+    GraphInEdge gie;
+    gie.ReadFile(filename);
+
+    // TODO if num_processs < num nodes
+
+    finished = false;
+    id = assign_id(my_rank, num_process);
+
+    // TODO convert graph
+
+    comm.barrier(); // MPI_Barrier synchonolise
+    WakeUp();
+
+}
+
 /////////
 
 GHSmsg GHScomm::sendConnect(int val, int edgeId)
@@ -209,8 +247,8 @@ GHSmsg GHScomm::sendConnect(int val, int edgeId)
     GHSmsg msg;
     msg.type = MsgType::CONNECT;
     msg.arg1 = val;
-    send.emplace(edgeId, msg);
-    
+    //send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -219,7 +257,9 @@ GHSmsg GHScomm::recvConnect(int LN)
     GHSmsg msg;
     msg.type = MsgType::CONNECT;
     msg.arg1 = LN;
-    recv.emplace(LN, msg);
+    // recv.emplace(LN, msg);
+    MPI_Status status;
+    MPI_Recv(&msg, 1, GHSmsgType, LN, MPI_ANY_TAG, comm, &status);
     return msg;
 }
 
@@ -230,7 +270,8 @@ GHSmsg GHScomm::sendInitiate(int LN, int FN, GHSNode::NodeState SN, int edgeId)
     msg.arg1 = LN;
     msg.arg2 = FN;
     msg.arg3 = SN;
-    send.emplace(edgeId, msg);
+    // send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -240,7 +281,8 @@ GHSmsg GHScomm::sendTest(int LN, int FN, int edgeId)
     msg.type = MsgType::TEST;
     msg.arg1 = LN;
     msg.arg2 = FN;
-    send.emplace(edgeId, msg);
+    // send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -257,7 +299,8 @@ GHSmsg GHScomm::sendAccept(int edgeId)
 {
     GHSmsg msg;
     msg.type = MsgType::ACCEPT;
-    send.emplace(edgeId, msg);
+    // send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -265,7 +308,8 @@ GHSmsg GHScomm::sendReject(int edgeId)
 {
     GHSmsg msg;
     msg.type = MsgType::REJECT;
-    send.emplace(edgeId, msg);
+    // send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -274,7 +318,8 @@ GHSmsg GHScomm::sendReport(double best_weight, int in_branch)
     GHSmsg msg;
     msg.type = MsgType::REPORT;
     msg.arg3 = best_weight;
-    send.emplace(in_branch, msg);
+    // send.emplace(in_branch, msg);
+    MPI_Send(&msg, 1, GHSmsgType, in_branch, MPI_ANY_TAG, comm);
     return msg;
 }
 
@@ -291,69 +336,8 @@ GHSmsg GHScomm::sendChangeCore(int edgeId)
 {
     GHSmsg msg;
     msg.type = MsgType::CHANGE_CORE;
-    send.emplace(edgeId, msg);
+    // send.emplace(edgeId, msg);
+    MPI_Send(&msg, 1, GHSmsgType, edgeId, MPI_ANY_TAG, comm);
     return msg;
 }
 
-
-
-int main(int argc, char* argv[]) {
-    ios_base::sync_with_stdio(false);
-
-    Communicator::init(&argc, &argv);
-
-    Communicator comm;
-
-    if (comm.emit(argc < 2)) {
-        comm.release();
-        comm(cerr) << "Error: need TSPLIB file name\n";
-        exit(1);
-    }
-
-    TspFile tsp;
-    string name = string("./tsp/") + argv[1];
-
-    if (comm.emit(!tsp.read((name + ".tsp").c_str()))) {
-        comm(cerr) << "Error: can not read TSPLIB file: " << argv[1] << '\n';
-        exit(1);
-    }
-
-    communication_interval = 10;
-    temperature_thresh = 5;
-
-    if (argc >= 3)
-        communication_interval = atoi(argv[2]);
-    if (argc >= 4)
-        temperature_thresh = atoi(argv[3]);
-
-    cout << "Communication interval: " << communication_interval << '\n'
-        << "Temperature threshold: " << temperature_thresh << '\n';
-
-    comm.bcast(&communication_interval, 1);
-    comm.bcast(&temperature_thresh, 1);
-
-    Path::init(tsp.size(), tsp.matrix());
-
-    comm.bcast(&Path::ncity, 1);
-    comm.bcast(Path::matrix, Path::ncity * Path::ncity);
-
-    // wait for master
-    comm.barrier();
-
-    start(comm);
-
-    TspFile tour;
-    if (!tour.read((name + ".opt.tour").c_str())) {
-        comm(cerr) << "Can not read TOUR file: " << argv[1] << '\n';
-    }
-    else {
-        Path path;
-        path.initialize();
-        copy_n(tour.matrix(), Path::ncity, path.data());
-        cout << "Standard answser: "
-            << path.computeLength() << '\n';
-    }
-
-    comm.release();
-    return 0;
-}

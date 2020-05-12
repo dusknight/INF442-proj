@@ -48,22 +48,36 @@ class GHScomm {
 	* See also http://www.cs.kent.edu/~farrell/cc08/lectures/mpi_datatypes.pdf
 	**/
 private:
-	MPI_Datatype Message;
+	int PE_num;
+	int nodeId;
+	GHSmsg demomsg;
+	MPI_Datatype GHSmsgType;
 	MPI_Op op;
+
+	MPI_Comm comm=MPI_COMM_WORLD;
 
 	std::queue<std::pair<int, GHSmsg>> recv;
 	std::queue<std::pair<int, GHSmsg>> send;
 	
 	friend class GHSNode;
 public:
-	void init(MPI_User_function* f) {
+
+	void init(int argc, char* argv[]) { MPI_Init(&argc, &argv); }
+	int commRank() {  return MPI_Comm_rank(comm, &PE_num); }
+	void finalise() { MPI_Finalize(); }
+	void commitType(MPI_User_function* f) {
 		const int blocklen[] = { 1, 1, 1, 1 };
-		const MPI_Aint disp[] = {
+		MPI_Aint disp[4] = {
 			offsetof(GHSmsg, type),
 			offsetof(GHSmsg, arg1),
 			offsetof(GHSmsg, arg2),
 			offsetof(GHSmsg, arg3)
 		};
+		//MPI_Get_address((void*)demomsg.type, disp);
+		//MPI_Get_address((void*)demomsg.arg1, disp+1);
+		//MPI_Get_address((void*)demomsg.arg2, disp+2);
+		//MPI_Get_address((void*)demomsg.arg3, disp+3);
+
 
 		const MPI_Datatype types[] = {
 			MPI_INT,
@@ -72,14 +86,23 @@ public:
 			MPI_DOUBLE
 		};
 
-		MPI_Datatype newtype;
 		MPI_Type_create_struct(sizeof(types) / sizeof(*types), 
-			blocklen, disp, types, &Message);
-		MPI_Type_commit(&Message);
+			blocklen, disp, types, &GHSmsgType);
+		MPI_Type_commit(&GHSmsgType);
 
 		if (f != nullptr) MPI_Op_create(f, 1, &op);
 	}
 
+	void send(GHSmsg id_to_send, int dest) {
+		MPI_Send(&id_to_send, 1, GHSmsgType, dest, 10, comm);
+	}
+	GHSmsg recv() {
+		MPI_Status status;
+		GHSmsg msg;
+		MPI_Recv(&msg, 1, GHSmsgType, MPI_ANY_SOURCE, MPI_ANY_TAG, comm, &status);
+		return msg;
+	}
+	void barrier() { MPI_Barrier(comm); }
 	GHSmsg sendConnect(int val, int edgeId);
 	GHSmsg recvConnect(int LN);
 
@@ -162,6 +185,18 @@ public:
 
 	void ChangeCore();
 	void RespChangeCore();
+
+	bool isFinished();
+	void Finish();
+
+	bool merge_condition();
+	bool absorb_condition();
+	bool test_reply_condition();
+	bool report_condition();
+	bool fragment_connect_condition();
+
+	void RUN(int argc, char* argv);
+
 };
 
 class GHSMPI :public GraphInEdge{
