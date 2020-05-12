@@ -39,7 +39,15 @@ struct GHSmsg {
 	int type;
 	int arg1;
 	int arg2;
-	double arg3;
+	int arg3;
+	double argf;
+	GHSmsg() {};
+	GHSmsg(MsgType mt) :type(mt) {};
+	GHSmsg(MsgType mt, int _arg1) :type(mt), arg1(_arg1) {};
+	GHSmsg(MsgType mt, int _arg1, int _arg2) :type(mt), arg1(_arg1), arg2(_arg2) {};
+	GHSmsg(MsgType mt, int _arg1, int _arg2, int _arg3) :type(mt), arg1(_arg1), arg2(_arg2), arg3(_arg3) {};
+	GHSmsg(MsgType mt, double _f) :type(mt), argf(_f) {};
+	GHSmsg(const GHSmsg& msg) :type(msg.type), arg1(msg.arg1), arg2(msg.arg2), arg3(msg.arg3), argf(msg.argf) {};
 };
 
 class GHScomm {
@@ -56,8 +64,8 @@ private:
 
 	MPI_Comm comm=MPI_COMM_WORLD;
 
-	std::queue<std::pair<int, GHSmsg>> recv;
-	std::queue<std::pair<int, GHSmsg>> send;
+	std::queue<std::pair<int, GHSmsg>> recv_queue;
+	//std::queue<std::pair<int, GHSmsg>> send_queue;
 	
 	friend class GHSNode;
 public:
@@ -66,12 +74,13 @@ public:
 	int commRank() {  return MPI_Comm_rank(comm, &PE_num); }
 	void finalise() { MPI_Finalize(); }
 	void commitType(MPI_User_function* f) {
-		const int blocklen[] = { 1, 1, 1, 1 };
-		MPI_Aint disp[4] = {
+		const int blocklen[] = { 1, 1, 1, 1, 1};
+		MPI_Aint disp[54] = {
 			offsetof(GHSmsg, type),
 			offsetof(GHSmsg, arg1),
 			offsetof(GHSmsg, arg2),
-			offsetof(GHSmsg, arg3)
+			offsetof(GHSmsg, arg3),
+			offsetof(GHSmsg, argf)
 		};
 		//MPI_Get_address((void*)demomsg.type, disp);
 		//MPI_Get_address((void*)demomsg.arg1, disp+1);
@@ -80,6 +89,7 @@ public:
 
 
 		const MPI_Datatype types[] = {
+			MPI_INT,
 			MPI_INT,
 			MPI_INT,
 			MPI_INT,
@@ -96,29 +106,29 @@ public:
 	void send(GHSmsg id_to_send, int dest) {
 		MPI_Send(&id_to_send, 1, GHSmsgType, dest, 10, comm);
 	}
-	GHSmsg recv() {
+	GHSmsg recv(int &from_node) {
 		MPI_Status status;
 		GHSmsg msg;
 		MPI_Recv(&msg, 1, GHSmsgType, MPI_ANY_SOURCE, MPI_ANY_TAG, comm, &status);
 		return msg;
 	}
 	void barrier() { MPI_Barrier(comm); }
-	GHSmsg sendConnect(int val, int edgeId);
-	GHSmsg recvConnect(int LN);
+	void sendConnect(int val, int edgeId);
+	//GHSmsg recvConnect(int LN);
 
-	GHSmsg sendInitiate(int LN, int FN, GHSNode::NodeState SN, int edgeId);
+	void sendInitiate(int LN, int FN, int SN, int edgeId);
 
-	GHSmsg sendTest(int LN, int FN, int edgeId);
-	GHSmsg recvTest(int L, int F, int edgeId);
+	void sendTest(int LN, int FN, int edgeId);
+	//GHSmsg recvTest(int L, int F, int edgeId);
 
-	GHSmsg sendAccept(int edgeId);
+	void sendAccept(int edgeId);
 
-	GHSmsg sendReject(int edgeId);
+	void sendReject(int edgeId);
 
-	GHSmsg sendReport(double best_weight, int in_branch);
-	GHSmsg recvReport(double in_weight, int edgeId);
+	void sendReport(double best_weight, int in_branch);
+	//GHSmsg recvReport(double in_weight, int edgeId);
 
-	GHSmsg sendChangeCore(int edgeId);
+	void sendChangeCore(int edgeId);
 
 };
 
@@ -140,14 +150,15 @@ private:
 	bool finished;
 
 	NodeState SN;  // state
-	vector<GHSEdge::EdgeState> SE;
+	// vector<GHSEdge::EdgeState> SE;
 	int FN;  // fragemnt identity
 	int LN;  // level
 	int find_count;
 
 	// for messages
 	GHScomm comm;
-	queue<GHSmsg> recv_msg;
+	//queue<GHSmsg> recv_msg;
+	//queue<int>recv_msg_from;
 
 	std::vector<GHSEdge> adj_out_edges;  // directed edges, adjacent edges
 
@@ -161,15 +172,16 @@ private:
 	int test_edge;
 
 	int assign_id(int id_rank, int num_process);
+	int get_idx_adj_out_node(int out_node);
 public:
 
 	GHSNode(vector<Edge> edges);
 	GHSNode();
 	void MsgHandler(GHSmsg msg, int from_edge);
 
-	int find_best_edge();
+	int find_best_edge(int & idx);
 
-	int find_test_edge();
+	int find_test_edge(int & idx);
 
 	void WakeUp();
 
