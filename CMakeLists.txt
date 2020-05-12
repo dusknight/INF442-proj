@@ -18,11 +18,11 @@ add_executable(task3-worker Graph.h GraphMpi.hpp
 target_link_libraries(task3-worker ${MPI_LIBRARIES})
 
 add_executable(task4-master Graph.h GraphMpi.hpp GHSMpi.hpp
-    Graph.cpp GraphMpi.cpp GHSMpi.cpp )
+    Graph.cpp GraphMpi.cpp GHSMpi.cpp  "Task4.cpp")
 target_link_libraries(task4-master ${MPI_LIBRARIES})
 
 add_executable(task4-worker Graph.h GraphMpi.hpp GHSMpi.hpp
-    Graph.cpp GraphMpi.cpp GHSMpi.cpp)
+    Graph.cpp GraphMpi.cpp GHSMpi.cpp "Task4.cpp")
 target_link_libraries(task4-worker ${MPI_LIBRARIES})
 
 if(MPI_COMPILE_FLAGS)

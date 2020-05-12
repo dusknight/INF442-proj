@@ -132,6 +132,22 @@ void GraphInEdge::ReadFile(string filename)
 	}
 }
 
+vector<vector<Edge>> GraphInEdge::toAdjecentList()
+{
+	vector<vector<Edge>> vve;
+	for (int i = 0; i < vertSize+1; i++) { // ATTENTION: vertId starts from 1
+		vector<Edge> ve;
+		vve.push_back(ve);
+	}
+
+	for (auto ie = edges.begin(); ie != edges.end(); ie++) {
+		int from = ie->u;
+		int to = ie->v;
+		vve[from].push_back(*ie);
+	}
+	return vve;
+}
+
 double GraphInEdge::getEdgeCost(int u, int v)
 {
 	// TODO

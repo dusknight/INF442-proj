@@ -147,8 +147,9 @@ private:
 
 	// for messages
 	GHScomm comm;
+	queue<GHSmsg> recv_msg;
 
-	std::vector<GHSEdge> edges;  // ???
+	std::vector<GHSEdge> adj_out_edges;  // directed edges, adjacent edges
 
 	// for Test
 	int best_edge;
@@ -159,9 +160,12 @@ private:
 	//
 	int test_edge;
 
+	int assign_id(int id_rank, int num_process);
 public:
 
 	GHSNode(vector<Edge> edges);
+	GHSNode();
+	void MsgHandler(GHSmsg msg, int from_edge);
 
 	int find_best_edge();
 
@@ -195,7 +199,7 @@ public:
 	bool report_condition();
 	bool fragment_connect_condition();
 
-	void RUN(int argc, char* argv);
+	void RUN(int argc, char* argv[]);
 
 };
 
@@ -203,12 +207,12 @@ class GHSMPI :public GraphInEdge{
 
 };
 
-#include <queue>
-#include <unordered_map>
-class GHS {
-private:
-	GHSNode local_nodes;
-	std::unordered_map<Edge, std::queue<>> message_map;
-};
+//#include <queue>
+//#include <unordered_map>
+//class GHS {
+//private:
+//	GHSNode local_nodes;
+//	std::unordered_map<Edge, std::queue<>> message_map;
+//};
 
 #endif //INF442_P3_GHSMPI_HPP

@@ -36,7 +36,7 @@ public:
 
 class GraphInEdge :public Graph {
 	/*
-	 * Oriented Graph, implemented by a vector of edges.
+	 * Direced Graph, implemented by a vector of edges.
 	 */
 protected:
 	vector<Edge> edges;
@@ -53,6 +53,7 @@ public:
 	double getEdgeCost(int u, int v) override;
 	int findEdge(int u, int v);
 	void ReadFile(string filename) override;
+	vector<vector<Edge>> toAdjecentList();
 };
 
 class MSTSolver {
