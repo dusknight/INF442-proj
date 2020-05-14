@@ -4,9 +4,9 @@ int main(int argc, char* argv[]) {
 	GraphInEdge gie;
 	gie.ReadFile("test_in.txt");
 	
-	GHSNode gn;
-	gn.RUN(0, NULL);
-
+	GHSMPI ghsmpi;
+	ghsmpi.init();
+	ghsmpi.run_loop();
 
 	return 0;
 }
