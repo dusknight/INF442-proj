@@ -548,10 +548,10 @@ void GHSMPI::exec_send_recv()
         GHSmsg msg = to_send.front();
         to_send.pop();
         int machine_id = vert2machine[msg.dest_vid];
-        if (machine_id == rank) recved.emplace(msg);  // if in this machine
-        else {
+        // if (machine_id == rank) recved.emplace(msg);  // if in this machine
+        // else {
             send_buffers[machine_id].push_back(msg);
-        }
+        // }
     }
 
     // exchange buffers
@@ -729,7 +729,7 @@ void GHSMPI::exchange_with_all_machine()
         for (auto imsg = im->begin(); imsg != im->end(); imsg++)
             sbuffer.push_back(*imsg);
 
-    MPI_Alltoallv(sbuffer.data(), send_counts.data(), sdispl, comm.getType(),
-        recv_buffers.data(), recv_counts.data(), rdispl, comm.getType(), comm.comm);
+    MPI_Alltoallv(sbuffer.data(), send_counts.data(), this->sdispl, comm.getType(),
+        this->recv_buffers.data(), recv_counts.data(), this->rdispl, comm.getType(), comm.comm);
 
 }
