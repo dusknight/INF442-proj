@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project (INF442-P3)
 set(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_COMPILER "mpicc")
 
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})

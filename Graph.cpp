@@ -31,6 +31,13 @@ Edge::Edge(const Edge& e)
 	cost = e.cost;
 }
 
+Edge::Edge()
+{
+	u = -1;
+	v = -1;
+	cost = -1;
+}
+
 bool Edge::cmp(Edge a, Edge b)
 {
 	return a.cost < b.cost;

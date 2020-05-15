@@ -23,6 +23,15 @@ struct GHSEdge :public Edge {
 	GHSEdge(Edge e) :Edge(e) {
 		state = BASIC;
 	}
+	GHSEdge(const GHSEdge& e):Edge(e){
+		state = e.state;
+	}
+	GHSEdge() {
+		state = BASIC;
+		u = -1;
+		v = -1;
+		cost = -1;
+	}
 };
 
 enum MsgType {
@@ -43,7 +52,7 @@ struct GHSmsg {
 	double argf;
 	int dest_vid;
 	int src_vid;
-	GHSmsg() {};
+	GHSmsg() { type = -1; arg1 = arg2 = arg3 = argf = dest_vid = src_vid = -1; }
 	GHSmsg(MsgType mt, int _dest, int _src) :type(mt), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _dest, int _src) :type(mt), arg1(_arg1), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _arg2, int _dest, int _src) :type(mt), arg1(_arg1), arg2(_arg2), dest_vid(_dest), src_vid(_src) {};
@@ -169,7 +178,7 @@ private:
 	queue<GHSmsg> recv_msg;
 	//queue<int>recv_msg_from;
 
-	std::vector<GHSEdge> adj_out_edges;  // directed edges, adjacent edges
+	map<int, GHSEdge> adj_out_edges;  // directed edges, adjacent edges
 
 	// for Test
 	int best_edge;
@@ -181,16 +190,18 @@ private:
 	int test_edge;
 
 	int assign_id(int id_rank, int num_process);
-	int get_idx_adj_out_node(int out_node);
+	// int get_idx_adj_out_node(int out_node);
 public:
 
 	GHSNode(int _id, vector<Edge> _edges) :id(_id) { 
 		for (int i = 0; i < _edges.size(); ++i) {
 			GHSEdge ge(_edges[i]);
-			adj_out_edges.push_back(ge);
+			adj_out_edges[ge.v] = ge;
+			// adj_out_edges.push_back(ge);
 
 			//SE[i] = GHSEdge::EdgeState::BASIC;
 		}
+		machine = NULL;
 		SN = SLEEPING;
 		LN = 0;
 		FN = 0;
@@ -205,11 +216,11 @@ public:
 	GHSNode(vector<Edge> edges);
 	GHSNode();
 	void set_machine(GHSMPI* _machine) { machine = _machine; }
+	int getSN() { return SN; }
 	void MsgHandler(GHSmsg msg, int from_edge);
 
-	int find_best_edge(int & idx);
-
-	int find_test_edge(int & idx);
+	int find_best_edge();
+	int find_test_edge();
 
 	void WakeUp();
 
@@ -232,6 +243,7 @@ public:
 
 	bool isFinished();
 	//void Finish();
+	vector<int> get_branches();
 
 	bool merge_condition();
 	bool absorb_condition();
@@ -259,9 +271,10 @@ private:
 	bool is_all_finished;
 
 	queue<GHSmsg> to_send;
-	queue<GHSmsg> recved;
+	queue<GHSmsg> recved_this_time;
+	queue<GHSmsg> recved_later;
 
-	vector<vector<GHSmsg>> send_buffers;
+	map<int, vector<GHSmsg>> send_buffers; // idx == machine_rank (machine_id)
 	vector<GHSmsg> recv_buffers;
 
 	int* sdispl, *rdispl;
@@ -276,6 +289,7 @@ public:
 
 	int assign_vertice_to_machine(int v_id);  // values will be added to vert2machine
 	bool ask_all_nodes_if_finished();
+	void print_node_states();
 
 	void send_msg(GHSmsg msg);
 	void emplace_recv_queue(GHSmsg msg);
