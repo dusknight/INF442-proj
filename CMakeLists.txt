@@ -10,14 +10,10 @@ add_executable(task1 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kru
 
 add_executable(task2 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task2.cpp)
 
+add_executable(task3 Graph.h GraphMpi.hpp PrimDistributed.hpp PrimDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task3.cpp
+    Graph.cpp GraphMpi.cpp Task3.cpp)
+target_link_libraries(task3 ${MPI_LIBRARIES})
 
-add_executable(task3-master Graph.h GraphMpi.hpp PrimDistributed.hpp PrimDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task3.cpp
-    Graph.cpp GraphMpi.cpp "Task3.cpp")
-target_link_libraries(task3-master ${MPI_LIBRARIES})
-
-add_executable(task3-worker Graph.h GraphMpi.hpp PrimDistributed.hpp PrimDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task3.cpp
-    Graph.cpp GraphMpi.cpp "Task3.cpp")
-target_link_libraries(task3-worker ${MPI_LIBRARIES})
 
 add_executable(task4 Graph.h GraphMpi.hpp GHSMpi.hpp
     Graph.cpp GraphMpi.cpp GHSMpi.cpp Task4.cpp)
@@ -29,19 +25,20 @@ add_executable(task5 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kru
     Task5.cpp)
 
 
+add_executable(task6 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp 
+    kmeans.hpp kmeans.cpp 
+    KruskalClustering.hpp KruskalClustering.cpp
+    Task6.cpp)
+
 if(MPI_COMPILE_FLAGS)
-  set_target_properties(task3-worker PROPERTIES
-    COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
-  set_target_properties(task3-master PROPERTIES
+  set_target_properties(task3 PROPERTIES
     COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
   set_target_properties(task4 PROPERTIES
     COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
 endif()
 
 if(MPI_LINK_FLAGS)
-  set_target_properties(task3-worker PROPERTIES
-    LINK_FLAGS "${MPI_LINK_FLAGS}")
-  set_target_properties(task3-master PROPERTIES
+  set_target_properties(task3 PROPERTIES
     LINK_FLAGS "${MPI_LINK_FLAGS}")
   set_target_properties(task4 PROPERTIES
     LINK_FLAGS "${MPI_LINK_FLAGS}")
