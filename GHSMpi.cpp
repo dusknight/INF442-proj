@@ -257,9 +257,9 @@ void GHSNode::RespTest(int L, double F, int edge_id)  // checked ok
     if (L > LN) // place the received message at the end of the queue
         //comm.recvTest(L, F, edge_id);
     {
-        GHSmsg msg(MsgType::TEST, L, F);
+        GHSmsg msg(MsgType::TEST, L, F);  
         // comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
-        machine->emplace_recv_queue(GHSmsg(MsgType::TEST, L, F, id, edge_id));
+        machine->emplace_recv_queue(GHSmsg(MsgType::TEST, L, F, id, edge_id));  //TODOL duplicated ????????
         //recv_msg.emplace(msg);
         //recv_msg_from.emplace(edge_id);
     }
@@ -304,12 +304,11 @@ void GHSNode::Report()  // checked
     }
 }
 
-void GHSNode::RespReport(double w, int edge_id)  // TODO: make it the same as the original ones
+void GHSNode::RespReport(double w, int from_edge)  // TODO: make it the same as the original ones
 {
-    
-    if (edge_id != in_branch) {
+    if (from_edge != in_branch) {
         find_count--;
-        if (w < adj_out_edges[best_edge].cost) best_edge = edge_id;
+        if (w < adj_out_edges[best_edge].cost) best_edge = from_edge;
         Report();
     }
     else if (SN == FIND) // place the received message at the end of queue
@@ -317,7 +316,7 @@ void GHSNode::RespReport(double w, int edge_id)  // TODO: make it the same as th
         //GHSmsg msg(MsgType::REPORT);
         //msg.argf = w;
         //comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
-        machine->emplace_recv_queue(GHSmsg(MsgType::REPORT, w, id, edge_id));
+        machine->emplace_recv_queue(GHSmsg(MsgType::REPORT, w, id, from_edge));
         //recv_msg.emplace(msg);
         //recv_msg_from.emplace(edge_id);
 
@@ -346,7 +345,7 @@ void GHSNode::ChangeCore()  // checked ok
         machine->send_msg(GHSmsg(MsgType::CHANGE_CORE, best_edge, id));
     else {
         // comm.sendConnect(LN, best_edge);
-        machine->send_msg(GHSmsg(MsgType::CONNECT, LN, id));
+        machine->send_msg(GHSmsg(MsgType::CONNECT, LN, best_edge, id));
         adj_out_edges[best_edge].state = GHSEdge::EdgeState::BRANCH;
     }
 }
@@ -483,25 +482,25 @@ void GHSMPI::init()
 
     // read_file
     GraphInEdge gie;
-     //gie.ReadFile(filename);
-    gie.addEdge(Edge(1, 2, 1));
-    gie.addEdge(Edge(2, 1, 1));
-    gie.addEdge(Edge(2, 3, 1));
-    gie.addEdge(Edge(3, 2, 1));
-    gie.addEdge(Edge(3, 4, 1));
-    gie.addEdge(Edge(4, 3, 1));
-    gie.addEdge(Edge(4, 5, 1));
-    gie.addEdge(Edge(5, 4, 1));
-    gie.addEdge(Edge(5, 6, 1));
-    gie.addEdge(Edge(6, 5, 1));
-    gie.addEdge(Edge(6, 7, 1));
-    gie.addEdge(Edge(7, 6, 1)); 
-    gie.addEdge(Edge(7, 1, 1));
-    gie.addEdge(Edge(1, 7, 1));
-    gie.addEdge(Edge(2, 6, 1));
-    gie.addEdge(Edge(6, 2, 1));
-    gie.addEdge(Edge(3, 5, 1));
-    gie.addEdge(Edge(5, 3, 1));
+    gie.ReadFile(filename);
+    //gie.addEdge(Edge(1, 2, 1));
+    //gie.addEdge(Edge(2, 1, 1));
+    //gie.addEdge(Edge(2, 3, 1));
+    //gie.addEdge(Edge(3, 2, 1));
+    //gie.addEdge(Edge(3, 4, 1));
+    //gie.addEdge(Edge(4, 3, 1));
+    //gie.addEdge(Edge(4, 5, 1));
+    //gie.addEdge(Edge(5, 4, 1));
+    //gie.addEdge(Edge(5, 6, 1));
+    //gie.addEdge(Edge(6, 5, 1));
+    //gie.addEdge(Edge(6, 7, 1));
+    //gie.addEdge(Edge(7, 6, 1)); 
+    //gie.addEdge(Edge(7, 1, 1));
+    //gie.addEdge(Edge(1, 7, 1));
+    //gie.addEdge(Edge(2, 6, 1));
+    //gie.addEdge(Edge(6, 2, 1));
+    //gie.addEdge(Edge(3, 5, 1));
+    //gie.addEdge(Edge(5, 3, 1));
 
 
     auto adj_edge = gie.toAdjecentList();
