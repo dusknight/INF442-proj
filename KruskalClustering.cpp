@@ -85,13 +85,37 @@ void KruskalClustering::kMSTsolve()
 		}
 	}
 
+
+	// convert back to points
+	//for (int ic = 0; ic < clusters.size(); ic++) {
+	//	for (auto ip = clusters[ic].begin(); ip != clusters[ic].end(); ip++) {
+	//		kMeansSolver.get_point[(*ip) - 1].label = ic;
+	//	}
+	//}
+
+	std::cout << "=====================================" << std::endl;
+	std::cout << "          MST init K means           " << std::endl;
+	std::cout << "=====================================" << std::endl;
+	// execute k-means algorithm
+	std::cout << "Intracluster variance before k-means: " << kMeansSolver.intracluster_variance() << std::endl;
+	//kMeansSolver.init_forgy();
+	kMeansSolver._kmeans_calc();
+	// kMeansSolver.kmeans();
+	std::cout << "Intracluster variance after k-means: " << kMeansSolver.intracluster_variance() << std::endl;
+	std::cout << "Sihouette value of k=" << k << " is: " << kMeansSolver.get_sihouette() << std::endl;
+
 }
 
 void KruskalClustering::kMeansSolve()
 {
+	std::cout << "=====================================" << std::endl;
+	std::cout << "      K means algorithm -  Forgy     " << std::endl;
+	std::cout << "=====================================" << std::endl;
 	// execute k-means algorithm
 	std::cout << "Intracluster variance before k-means: " << kMeansSolver.intracluster_variance() << std::endl;
-	kMeansSolver.kmeans();
+	kMeansSolver.init_forgy();
+	kMeansSolver._kmeans_calc();
+	// kMeansSolver.kmeans();
 	std::cout << "Intracluster variance after k-means: " << kMeansSolver.intracluster_variance() << std::endl;
 	std::cout << "Sihouette value of k=" << k << " is: " << kMeansSolver.get_sihouette() << std::endl;
 }

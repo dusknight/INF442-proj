@@ -239,7 +239,7 @@ void cloud::init_forgy() {
 	//bool is_chosen[n];
 	std::vector<bool> is_chosen;
 	is_chosen.resize(n);
-	for (int i = 0; i < n; i++) is_chosen[n] = false;
+	for (int i = 0; i < n; i++) is_chosen[i] = false;
 	//    std::srand((unsigned int) std::time(nullptr));
 	int c = 0;
 	for (; c < k;) {
@@ -255,8 +255,22 @@ void cloud::init_forgy() {
 
 void cloud::kmeans() {
 	//
-	init_plusplus();
+	// init_plusplus();
+	init_forgy();
 	//point _cen[k];
+	std::vector<point> _cen;
+	_cen.resize(k);
+	do {
+		for (int c = 0; c < k; c++)
+			for (int i = 0; i < d; i++)
+				_cen[c].coords[i] = centers[c].coords[i];
+		set_voronoi_labels();
+		set_centroid_centers();
+	} while (!point::arr_equals(centers, _cen.data(), k));
+}
+
+void cloud::_kmeans_calc()
+{
 	std::vector<point> _cen;
 	_cen.resize(k);
 	do {

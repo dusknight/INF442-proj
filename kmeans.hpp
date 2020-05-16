@@ -114,6 +114,7 @@ public:
 	void set_centroid_centers();
 
 	void kmeans();
+	void _kmeans_calc();
 
 	void init_forgy();
 	void init_plusplus();

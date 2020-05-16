@@ -21,7 +21,6 @@ private:
 
 	vector<unordered_set<int>> clusters;  // for kMSTsolver
 public:
-
 	KruskalClustering(int _d, int _k) :k(_k), dim(_d), kMeansSolver(_d, DEFAULT_CLOUD_CAPACITY, _k), graph(), kMSTsolver(&graph) {};  // TODO init kMSTSolver
 	void set_k(const int _k) { k = _k; };
 	void set_dim(const int _dim) { dim = _dim; };
