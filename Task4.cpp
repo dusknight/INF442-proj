@@ -1,8 +1,8 @@
 #include"GHSMpi.hpp"
 
 int main(int argc, char* argv[]) {
-	GraphInEdge gie;
-	gie.ReadFile("test_in.txt");
+	//GraphInEdge gie;
+	//gie.ReadFile("test_in.txt");
 	
 	GHSMPI ghsmpi;
 	ghsmpi.init();
