@@ -9,7 +9,7 @@
 #include <mpi.h>
 #include <queue>
 #include <map>
-
+#include <cfloat>
 
 struct GHSEdge :public Edge {
 	static const enum EdgeState { REJECTED = 0, BRANCH, BASIC };
