@@ -1,9 +1,13 @@
 #pragma once
+#ifndef INF442_P3_KRUSKALCLUSTERING_HPP
+#define INF442_P3_KRUSKALCLUSTERING_HPP
+
 #include "Graph.h"
-#include "Kruskal.hpp"
 #include "kmeans.hpp"
+#include "Kruskal.hpp"
 
 #include <string>
+#include <unordered_set>
 
 const int DEFAULT_CLOUD_CAPACITY = 5000;
 
@@ -26,3 +30,5 @@ public:
 	void kMeansSolve();
 	void compareSilhouette();
 };
+
+#endif // INF442_P3_KRUSKALCLUSTERING_HPP

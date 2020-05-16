@@ -20,7 +20,7 @@ PrimPaSolver::~PrimPaSolver()
 }
 
 
-PrimPaSolver::PrimPaSolver(GraphInEdge* grpah)
+PrimPaSolver::PrimPaSolver(GraphInEdge* graph)
 {
 	this->graph = graph;
 	MSTCost = -1;

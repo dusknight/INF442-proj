@@ -1,5 +1,6 @@
 // kmeans.cpp, from TP3, modified
 #include "kmeans.hpp"
+
 #include <iostream>
 #include <cassert>
 #include <cmath>    // for sqrt, fabs

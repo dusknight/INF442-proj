@@ -14,7 +14,7 @@ void KruskalClustering::ReadFile(string filename, int nb_clusters, int x_column,
 	std::getline(is, header_line);
 	std::vector<std::string> names;
 
-	const int d = nb_columns(header_line) - 1;
+	const int d = std::count(header_line.begin(), header_line.end(), '\t');
 	// const int nmax = 150;
 	const int k = nb_clusters;
 

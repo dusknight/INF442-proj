@@ -24,9 +24,9 @@ add_executable(task4 Graph.h GraphMpi.hpp GHSMpi.hpp
 target_link_libraries(task4 ${MPI_LIBRARIES})
 
 add_executable(task5 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp 
-kmeans.hpp kmeans.cpp 
-KruskalClustering.hpp KruskalClustering.cpp
-Task5.cpp)
+    kmeans.hpp kmeans.cpp 
+    KruskalClustering.hpp KruskalClustering.cpp
+    Task5.cpp)
 
 
 if(MPI_COMPILE_FLAGS)
