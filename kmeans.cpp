@@ -534,9 +534,6 @@ void test_init_random_partition() {
 /**
  * Counts the number of tab-separated columns in the given line.
  */
-int nb_columns(const std::string& line) {
-	return std::count(line.begin(), line.end(), '\t') + 1;
-}
 
 
 void test_point() {

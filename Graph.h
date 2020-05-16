@@ -48,7 +48,7 @@ protected:
 	friend class PrimPaSolver;
 public:
 	GraphInEdge();
-	GraphInEdge(GraphInEdge& gie);
+	GraphInEdge(const GraphInEdge& gie);
 	//    ~GraphInEdge();
 	void addEdge(Edge e);
 	string getGraphName() const;

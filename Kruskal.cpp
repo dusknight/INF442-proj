@@ -30,6 +30,11 @@ KruskalSolver::KruskalSolver(GraphInEdge* graph)
     MSTCost = -1;
 }
 
+void KruskalSolver::setGraph(GraphInEdge* gie)
+{
+    graph = gie;
+}
+
 void KruskalSolver::ReadFile(string filename)
 {
     graph->ReadFile(filename);
@@ -79,4 +84,13 @@ void KruskalSolver::printMST()
     {
         cout << graph->edges[*i].u << " -- " << graph->edges[*i].v << endl;
     }
+}
+
+vector<Edge> KruskalSolver::getMSTedges()
+{
+    vector<Edge> ve;
+    for (auto i = MSTedges.begin(); i != MSTedges.end(); i++) {
+        ve.push_back(graph->edges[*i]);
+    }
+    return ve;
 }
