@@ -1,5 +1,5 @@
 //
-// Created by Shikang on 5/9/2020.
+// Created by Mingyu ZHANG on 5/9/2020.
 //
 
 #include "PrimAndBoruvka.hpp"
@@ -46,7 +46,7 @@ double PrimSolver::CalcMST()
     double ans = 0; //所求边权之和
     const int taille = graph->getVertSize();
 
-    int startpoint = 0; // 以顶点0作为出发点
+    int startpoint = 1; // 以顶点0作为出发点
     vector<bool> visited = { 0, 1, };
     for (int i = 1; i < taille; i++)
     {

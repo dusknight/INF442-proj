@@ -45,6 +45,7 @@ protected:
 	friend class KruskalSolver;
 	friend class PrimSolver;
 	friend class BoruvkaSolver;
+	friend class PrimPaSolver;
 public:
 	GraphInEdge();
 	GraphInEdge(const GraphInEdge& gie);
