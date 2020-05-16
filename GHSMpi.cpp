@@ -89,10 +89,10 @@ void GHSNode::MsgHandler(GHSmsg msg, int from_edge)
         RespConnect(msg.arg1, from_edge);
         break;
     case MsgType::INIT:
-        RespInit(msg.arg1, msg.arg2, (GHSNode::NodeState)msg.arg3, from_edge);;
+        RespInit(msg.arg1, msg.argf, (GHSNode::NodeState)msg.arg2, from_edge);  // L, F, S
         break;
     case MsgType::TEST:
-        RespTest(msg.arg1, msg.arg2, from_edge);
+        RespTest(msg.arg1, msg.argf, from_edge);  // LN, FN
         break;
     case MsgType::ACCEPT:
         RespAccept(from_edge);
@@ -182,7 +182,7 @@ void GHSNode::WakeUp() {  // checked ok
     // comm.sendConnect(0, out_node);
 }
 
-void GHSNode::RespInit(int L, int F, GHSNode::NodeState S, int edge_id) // checked (a little different)
+void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int edge_id) // checked (a little different)
 {
     // CHECK : have difference with GH.
     LN = L;
@@ -229,8 +229,8 @@ void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_conne
         else {  // merge
             // send Init (LN+1, w(j), FIND) on edge j
             // comm.sendInitiate(LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id);
-            // machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id, id));
-            machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, FN, FIND, edge_id, id));
+             machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id, id));
+            //machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, FN, FIND, edge_id, id));
             // TODO: check double and int conversion (cost);
         }
     }
@@ -250,7 +250,7 @@ void GHSNode::Test()  // checked
 
 }
 
-void GHSNode::RespTest(int L, int F, int edge_id)  // checked ok
+void GHSNode::RespTest(int L, double F, int edge_id)  // checked ok
 {
     if (SN == SLEEPING) WakeUp();  
 
@@ -358,8 +358,9 @@ void GHSNode::RespChangeCore()
 
 bool GHSNode::isFinished()
 {
-    finished = finished || merge_condition() || absorb_condition() ||
-        test_reply_condition() || report_condition() || fragment_connect_condition();
+    //finished = finished;
+    //|| merge_condition() || absorb_condition() ||
+    //    test_reply_condition() || report_condition() || fragment_connect_condition();
     return finished;
 }
 
@@ -373,211 +374,6 @@ vector<int> GHSNode::get_branches()
     return branches;
 }
 
-//void GHSNode::Finish()
-//{
-//    comm.finalise();
-//}
-
-bool GHSNode::merge_condition()
-{
-    return false;
-}
-
-bool GHSNode::absorb_condition()
-{
-    return false;
-}
-
-bool GHSNode::test_reply_condition()
-{
-    return false;
-}
-
-bool GHSNode::report_condition()
-{
-    return false;
-}
-
-bool GHSNode::fragment_connect_condition()
-{
-    return false;
-}
-
-//void GHSNode::RUN(int argc, char* argv[])
-//{
-//    string filename = "test_in.txt";
-//    // comm.init(0, NULL);
-//    comm.init(argc, argv); // MPI_Init
-//
-//    int num_process, my_rank;
-//    MPI_Comm_size(comm.comm, &num_process);
-//    MPI_Comm_rank(comm.comm, &my_rank);
-//    // rank from 0 to N-1
-//
-//
-//    // read_file
-//    GraphInEdge gie;
-//    gie.ReadFile(filename);
-//    auto adj_edge = gie.toAdjecentList();
-//    const int id_start_from = 1; // FOR vertex name starting from 1
-//    int _lcl_vert_count = gie.getVertSize() / num_process;
-//
-//    // TODO if num_processs < num nodes
-//
-//    finished = false;
-//    id = assign_id(my_rank, num_process);
-//    int _lcl_id_from, _lcl_id_to;
-//    _lcl_id_from = id * _lcl_vert_count + id_start_from;
-//    _lcl_id_to = (id+1) * _lcl_vert_count + id_start_from;
-//    if (id == num_process - 1) _lcl_id_to = gie.getVertSize() + id_start_from;  // last worker
-//
-//    // TODO convert graph
-//
-//    // int edge_count = 0;
-//    for (int i = _lcl_id_from; i < _lcl_id_to; i++) {
-//        if (i > _lcl_id_from) break; // TODO: GHS inits from one nodes 
-//        // for (int j = 0; j < id_start_from; j++) SE.push_back(GHSEdge::EdgeState::BASIC);
-//        for (auto j = adj_edge[i + id_start_from].begin(); j != adj_edge[i + id_start_from].end(); j++) {
-//            adj_out_edges.push_back(*j);
-//            // SE.push_back(GHSEdge::EdgeState::BASIC);
-//        }
-//    }
-//
-//    comm.barrier(); // MPI_Barrier synchonolise
-//    WakeUp();
-//
-//    while (! isFinished()) {
-//        if (!comm.recv_queue.empty()) {
-//            pair<int, GHSmsg> p = comm.recv_queue.front();
-//            comm.recv_queue.pop();
-//            int from_edge = p.first;
-//            GHSmsg msg = p.second;
-//
-//            //GHSmsg msg = recv_msg.front();
-//            //recv_msg.pop();
-//            //int from_edge = recv_msg_from.front();
-//            //recv_msg.front.pop();
-//            MsgHandler(msg, from_edge);
-//        }
-//        int from_edge;
-//        GHSmsg msg = comm.recv(from_edge);
-//        MsgHandler(msg, from_edge);
-//    }
-//    cout << "---Node rank " << my_rank << " finished." << endl;
-//
-//}
-
-/////////
-
-void GHScomm::sendConnect(int val, int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg;
-    msg.type = MsgType::CONNECT;
-    msg.arg1 = val;
-    msg.dest_vid = edgeId;
-    msg.src_vid = src_eid;
-    //send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
-
-//GHSmsg GHScomm::recvConnect(int LN)
-//{
-//    GHSmsg msg;
-//    msg.type = MsgType::CONNECT;
-//    msg.arg1 = LN;
-//    // recv.emplace(LN, msg);
-//    MPI_Status status;
-//    MPI_Recv(&msg, 1, GHSmsgType, LN, MPI_ANY_TAG, comm, &status);
-//    return msg;
-//}
-
-void GHScomm::sendInitiate(int LN, int FN, int SN, int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg;
-    msg.type = MsgType::INIT;
-    msg.arg1 = LN;
-    msg.arg2 = FN;
-    msg.arg3 = SN;
-    msg.dest_vid = edgeId;
-    msg.src_vid = src_eid;
-    // send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    // MPI_Bcast(&msg, 1, GHSmsgType, edgeId, comm); 
-    return;
-}
-
-void GHScomm::sendTest(int LN, int FN, int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg;
-    msg.type = MsgType::TEST;
-    msg.arg1 = LN;
-    msg.arg2 = FN;
-    msg.dest_vid = edgeId;
-    msg.src_vid = src_eid;
-    // send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
-
-//GHSmsg GHScomm::recvTest(int L, int F, int edgeId)
-//{
-//    GHSmsg msg;
-//    msg.type = MsgType::TEST;
-//    msg.arg1 = L;
-//    msg.arg2 = F;
-//    recv.emplace(edgeId, msg); // TODO: check not identique
-//}
-
-void GHScomm::sendAccept(int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg(MsgType::ACCEPT, edgeId, src_eid);
-    // msg.type = MsgType::ACCEPT;
-    // send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
-
-void GHScomm::sendReject(int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg(MsgType::REJECT, edgeId, src_eid);
-    // msg.type = MsgType::REJECT;
-    // send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
-
-void GHScomm::sendReport(double best_weight, int in_branch, int src_eid, int machineId)
-{
-    //GHSmsg msg;
-    //msg.type = MsgType::REPORT;
-    //msg.argf = best_weight;
-    // send.emplace(in_branch, msg);
-    GHSmsg msg(MsgType::REPORT, in_branch, src_eid);
-    msg.argf = best_weight;
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
-
-//GHSmsg GHScomm::recvReport(double in_weight, int edgeId)
-//{
-//    GHSmsg msg;
-//    msg.type = MsgType::REPORT;
-//    msg.arg3 = in_weight;
-//    recv.emplace(edgeId, msg);
-//    return msg;
-//}
-
-void GHScomm::sendChangeCore(int edgeId, int src_eid, int machineId)
-{
-    GHSmsg msg;
-    msg.type = MsgType::CHANGE_CORE;
-    msg.dest_vid = edgeId;
-    msg.src_vid = src_eid;
-    // send.emplace(edgeId, msg);
-    MPI_Send(&msg, 1, GHSmsgType, machineId, MPI_ANY_TAG, comm);
-    return;
-}
 
 int GHSMPI::assign_vertice_to_machine(int v_id)
 {
@@ -687,7 +483,7 @@ void GHSMPI::init()
 
     // read_file
     GraphInEdge gie;
-    // gie.ReadFile(filename);
+     //gie.ReadFile(filename);
     gie.addEdge(Edge(1, 2, 1));
     gie.addEdge(Edge(2, 1, 1));
     gie.addEdge(Edge(2, 3, 1));
@@ -763,10 +559,10 @@ void GHSMPI::msg_handler(GHSmsg msg)
         nodes[dest_vid].RespConnect(msg.arg1, src_vid);
         break;
     case MsgType::INIT:
-        nodes[dest_vid].RespInit(msg.arg1, msg.arg2, (GHSNode::NodeState)msg.arg3, src_vid);
+        nodes[dest_vid].RespInit(msg.arg1, msg.argf, (GHSNode::NodeState)msg.arg2, src_vid);  // LN, FN, SN
         break;
     case MsgType::TEST:
-        nodes[dest_vid].RespTest(msg.arg1, msg.arg2, src_vid);
+        nodes[dest_vid].RespTest(msg.arg1, msg.argf, src_vid);  // LN, FN
         break;
     case MsgType::ACCEPT:
         nodes[dest_vid].RespAccept(src_vid);

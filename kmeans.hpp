@@ -1,7 +1,10 @@
 #pragma once
+#ifndef INF442_P3_KMEANS_HPP
+#define INF442_P3_KMEANS_HPP
+
 #include <cassert>
 #include <iostream>
-// using namespace std;
+#include <algorithm>
 
 struct point {
 	static int d;
@@ -112,6 +115,7 @@ public:
 	void set_centroid_centers();
 
 	void kmeans();
+	void _kmeans_calc();
 
 	void init_forgy();
 	void init_plusplus();
@@ -128,8 +132,11 @@ public:
 
 };
 
-int nb_columns(const std::string& line) {
+inline int nb_columns(const std::string& line) {
 	return std::count(line.begin(), line.end(), '\t') + 1;
 }
 
+
 int test_TD3(int argc, char** argv);
+
+#endif //INF442_P3_KMEANS_HPP

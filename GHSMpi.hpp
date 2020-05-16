@@ -9,10 +9,10 @@
 #include <mpi.h>
 #include <queue>
 #include <map>
-
+#include <cfloat>
 
 struct GHSEdge :public Edge {
-	static const enum EdgeState { REJECTED = 0, BRANCH, BASIC };
+	enum EdgeState { REJECTED = 0, BRANCH, BASIC };
 	EdgeState state;
 	GHSEdge(int u_, int v_, double cost_, EdgeState es_) :Edge(u_, v_, cost_) {
 		state = es_;
@@ -23,7 +23,7 @@ struct GHSEdge :public Edge {
 	GHSEdge(Edge e) :Edge(e) {
 		state = BASIC;
 	}
-	GHSEdge(const GHSEdge& e):Edge(e){
+	GHSEdge(const GHSEdge& e) :Edge(e) {
 		state = e.state;
 	}
 	GHSEdge() {
@@ -52,12 +52,14 @@ struct GHSmsg {
 	double argf;
 	int dest_vid;
 	int src_vid;
-	GHSmsg() { type = -1; arg1 = arg2 = arg3 = argf = dest_vid = src_vid = -1; }
+	GHSmsg() { type = arg1 = arg2 = arg3 = argf = dest_vid = src_vid = -1; }
 	GHSmsg(MsgType mt, int _dest, int _src) :type(mt), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _dest, int _src) :type(mt), arg1(_arg1), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _arg2, int _dest, int _src) :type(mt), arg1(_arg1), arg2(_arg2), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _arg2, int _arg3, int _dest, int _src) :type(mt), arg1(_arg1), arg2(_arg2), arg3(_arg3), dest_vid(_dest), src_vid(_src) {};
+	GHSmsg(MsgType mt, int _arg1, double _argf, int _arg2, int _dest, int _src) :type(mt), arg1(_arg1), arg2(_arg2), argf(_argf), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, double _f, int _dest, int _src) :type(mt), argf(_f), dest_vid(_dest), src_vid(_src) {};
+	GHSmsg(MsgType mt, int _arg1, double _argf, int _dest, int _src) :type(mt), arg1(_arg1), argf(_argf), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(const GHSmsg& msg) :type(msg.type), arg1(msg.arg1), arg2(msg.arg2), arg3(msg.arg3), argf(msg.argf), dest_vid(msg.dest_vid), src_vid(msg.src_vid) {};
 };
 
@@ -73,20 +75,19 @@ private:
 	GHSmsg demomsg;
 	MPI_Datatype GHSmsgType;
 	MPI_Op op;
-
-	MPI_Comm comm=MPI_COMM_WORLD;
+	MPI_Comm comm = MPI_COMM_WORLD;
 
 	std::queue<std::pair<int, GHSmsg>> recv_queue;
 	// std::queue<std::pair<int, GHSmsg>> send_queue;
-	
+
 	friend class GHSNode;
 public:
 
 	void init(int argc, char* argv[]) { MPI_Init(&argc, &argv); }
-	int commRank() {  return MPI_Comm_rank(comm, &PE_num); }
+	int commRank() { return MPI_Comm_rank(comm, &PE_num); }
 	void finalise() { MPI_Finalize(); }
 	void commitType(MPI_User_function* f) {
-		const int blocklen[] = { 1, 1, 1, 1, 1, 1, 1};
+		const int blocklen[] = { 1, 1, 1, 1, 1, 1, 1 };
 		MPI_Aint disp[7] = {
 			offsetof(GHSmsg, type),
 			offsetof(GHSmsg, arg1),
@@ -112,7 +113,7 @@ public:
 			MPI_INT
 		};
 
-		MPI_Type_create_struct(sizeof(types) / sizeof(*types), 
+		MPI_Type_create_struct(sizeof(types) / sizeof(*types),
 			blocklen, disp, types, &GHSmsgType);
 		MPI_Type_commit(&GHSmsgType);
 
@@ -125,30 +126,14 @@ public:
 	void send(GHSmsg msg_to_send, int dest) {
 		MPI_Send(&msg_to_send, 1, GHSmsgType, dest, 10, comm);
 	}
-	GHSmsg recv(int &from_m_node) {
+
+	GHSmsg recv(int& from_m_node) {
 		MPI_Status status;
 		GHSmsg msg;
 		MPI_Recv(&msg, 1, GHSmsgType, MPI_ANY_SOURCE, MPI_ANY_TAG, comm, &status);
 		return msg;
 	}
 	void barrier() { MPI_Barrier(comm); }
-	void sendConnect(int val, int edgeId, int src_eid, int machineId);
-	//GHSmsg recvConnect(int LN);
-
-	void sendInitiate(int LN, int FN, int SN, int edgeId, int src_eid, int machineId);
-
-	void sendTest(int LN, int FN, int edgeId, int src_eid, int machineId);
-	//GHSmsg recvTest(int L, int F, int edgeId);
-
-	void sendAccept(int edgeId, int src_eid, int machineId);
-
-	void sendReject(int edgeId, int src_eid, int machineId);
-
-	void sendReport(double best_weight, int in_branch, int src_eid, int machineId);
-	//GHSmsg recvReport(double in_weight, int edgeId);
-
-	void sendChangeCore(int edgeId, int src_eid, int machineId);
-
 };
 
 class GHSMPI;
@@ -160,8 +145,8 @@ class GHSNode : public GraphInEdge {
 	**/
 protected:
 public:
-	static const enum NodeState { SLEEPING = 0, FIND, FOUND };
-	
+	enum NodeState { SLEEPING = 0, FIND, FOUND };
+
 private:
 	GHSMPI* machine;
 	// friend class GHScomm;
@@ -171,7 +156,7 @@ private:
 
 	NodeState SN;  // state
 	// vector<GHSEdge::EdgeState> SE;
-	int FN;  // fragemnt identity
+	double FN;  // fragemnt identity
 	int LN;  // level
 	int find_count;
 
@@ -195,7 +180,7 @@ private:
 	// int get_idx_adj_out_node(int out_node);
 public:
 
-	GHSNode(int _id, vector<Edge> _edges) :id(_id) { 
+	GHSNode(int _id, vector<Edge> _edges) :id(_id) {
 		GHSEdge _special_mark(-1, -1, DBL_MAX, GHSEdge::EdgeState::BASIC);
 		adj_out_edges[-1] = _special_mark;
 		for (int i = 0; i < _edges.size(); ++i) {
@@ -219,7 +204,7 @@ public:
 		finished = false;
 	}
 	GHSNode(vector<Edge> edges);
-	GHSNode(const GHSNode &g);
+	GHSNode(const GHSNode& g);
 	GHSNode();
 	void set_machine(GHSMPI* _machine) { machine = _machine; }
 	int getSN() { return SN; }
@@ -230,15 +215,13 @@ public:
 
 	void WakeUp();
 
-	void RespInit(int L, int F, GHSNode::NodeState S, int edge_id);
-
+	void RespInit(int L, double F, GHSNode::NodeState S, int edge_id);
 	void RespConnect(int level, int edge_id);
 
 	void Test();
-	void RespTest(int L, int F, int edge_id);
+	void RespTest(int L, double F, int edge_id);
 
 	void RespAccept(int edge_id);
-
 	void RespReject(int edge_id);
 
 	void Report();
@@ -251,16 +234,16 @@ public:
 	//void Finish();
 	vector<int> get_branches();
 
-	bool merge_condition();
-	bool absorb_condition();
-	bool test_reply_condition();
-	bool report_condition();
-	bool fragment_connect_condition();
+	//bool merge_condition();
+	//bool absorb_condition();
+	//bool test_reply_condition();
+	//bool report_condition();
+	//bool fragment_connect_condition();
 
 	//void RUN(int argc, char* argv[]);
 };
 
-class GHSMPI :public GraphInEdge{
+class GHSMPI :public GraphInEdge {
 	/**
 	Machine : each instance of this class should be executed as one MPI node.
 	*/
@@ -283,8 +266,8 @@ private:
 	map<int, vector<GHSmsg>> send_buffers; // idx == machine_rank (machine_id)
 	vector<GHSmsg> recv_buffers;
 
-	int* sdispl, *rdispl;
-	
+	int* sdispl, * rdispl;
+
 public:
 	GHSMPI() {
 		ready = false;

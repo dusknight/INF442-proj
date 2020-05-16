@@ -14,7 +14,7 @@ void KruskalClustering::ReadFile(string filename, int nb_clusters, int x_column,
 	std::getline(is, header_line);
 	std::vector<std::string> names;
 
-	const int d = nb_columns(header_line) - 1;
+	const int d = std::count(header_line.begin(), header_line.end(), '\t');
 	// const int nmax = 150;
 	const int k = nb_clusters;
 
@@ -60,6 +60,11 @@ void KruskalClustering::ReadFile(string filename, int nb_clusters, int x_column,
 
 void KruskalClustering::kMSTsolve()
 {
+	std::cout << "=====================================" << std::endl;
+	std::cout << "                 MST                 " << std::endl;
+	std::cout << "=====================================" << std::endl;
+	std::cout << "Intracluster variance before k-means: " << kMeansSolver.intracluster_variance() << std::endl;
+	// solve MST
 	kMSTsolver.CalcMST();
 	vector<Edge> mst = kMSTsolver.getMSTedges();
 	sort(mst.begin(), mst.end(), [](Edge a, Edge b) {return a.cost > b.cost; });  // from greatest to smallest
@@ -85,13 +90,33 @@ void KruskalClustering::kMSTsolve()
 		}
 	}
 
+
+	// convert back to points
+	for (int ic = 0; ic < clusters.size(); ic++) {
+		for (auto ip = clusters[ic].begin(); ip != clusters[ic].end(); ip++) {
+			kMeansSolver.get_point((*ip) - 1).label = ic;
+		}
+	}
+
+	kMeansSolver.set_centroid_centers();
+	//kMeansSolver.init_forgy();
+	//kMeansSolver._kmeans_calc();
+	// kMeansSolver.kmeans();
+	std::cout << "Intracluster variance after k-means: " << kMeansSolver.intracluster_variance() << std::endl;
+	std::cout << "Sihouette value of k=" << k << " is: " << kMeansSolver.get_sihouette() << std::endl;
+
 }
 
 void KruskalClustering::kMeansSolve()
 {
+	std::cout << "=====================================" << std::endl;
+	std::cout << "      K means algorithm -  Forgy     " << std::endl;
+	std::cout << "=====================================" << std::endl;
 	// execute k-means algorithm
 	std::cout << "Intracluster variance before k-means: " << kMeansSolver.intracluster_variance() << std::endl;
-	kMeansSolver.kmeans();
+	kMeansSolver.init_forgy();
+	kMeansSolver._kmeans_calc();
+	// kMeansSolver.kmeans();
 	std::cout << "Intracluster variance after k-means: " << kMeansSolver.intracluster_variance() << std::endl;
 	std::cout << "Sihouette value of k=" << k << " is: " << kMeansSolver.get_sihouette() << std::endl;
 }
