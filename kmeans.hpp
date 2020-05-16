@@ -9,23 +9,17 @@ struct point {
 	int label;
 
 	point();
-
 	~point();
 
 	void print();
 
 	double dist(point& q);
-
 	double sq_dist(const point& q) const;
 
 	point operator+(const point& p);
-
 	void operator+=(const point& p);
-
 	bool operator==(const point& p);
-
 	bool operator!=(const point& p);
-
 	void operator/=(const double x);
 
 	static bool arr_equals(point* p, point* q, const int len);
@@ -69,7 +63,6 @@ public:
 		}
 
 		points[n].label = label;
-
 		n++;
 	}
 
@@ -135,5 +128,8 @@ public:
 
 };
 
+int nb_columns(const std::string& line) {
+	return std::count(line.begin(), line.end(), '\t') + 1;
+}
 
 int test_TD3(int argc, char** argv);

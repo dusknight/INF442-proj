@@ -47,7 +47,7 @@ protected:
 	friend class BoruvkaSolver;
 public:
 	GraphInEdge();
-	GraphInEdge(GraphInEdge& gie);
+	GraphInEdge(const GraphInEdge& gie);
 	//    ~GraphInEdge();
 	void addEdge(Edge e);
 	string getGraphName() const;

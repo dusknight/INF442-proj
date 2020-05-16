@@ -16,9 +16,12 @@ public:
     KruskalSolver();
     ~KruskalSolver();
     KruskalSolver(GraphInEdge* graph);
+    void setGraph(GraphInEdge* gie);
+    GraphInEdge* getGraph() { return graph; };
     void ReadFile(string filename);
     double CalcMST() override;
     void printMST() override;
+    vector<Edge> getMSTedges();
 };
 
 

@@ -58,7 +58,7 @@ GraphInEdge::GraphInEdge() : Graph()
 	graphName = "";
 }
 
-GraphInEdge::GraphInEdge(GraphInEdge& gie)
+GraphInEdge::GraphInEdge(const GraphInEdge& gie)
 {
 	graphName = gie.graphName;
 	edges = vector<Edge>(gie.edges);
