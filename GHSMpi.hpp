@@ -12,7 +12,7 @@
 #include <cfloat>
 
 struct GHSEdge :public Edge {
-	static const enum EdgeState { REJECTED = 0, BRANCH, BASIC };
+	enum EdgeState { REJECTED = 0, BRANCH, BASIC };
 	EdgeState state;
 	GHSEdge(int u_, int v_, double cost_, EdgeState es_) :Edge(u_, v_, cost_) {
 		state = es_;
@@ -145,7 +145,7 @@ class GHSNode : public GraphInEdge {
 	**/
 protected:
 public:
-	static const enum NodeState { SLEEPING = 0, FIND, FOUND };
+	enum NodeState { SLEEPING = 0, FIND, FOUND };
 
 private:
 	GHSMPI* machine;
