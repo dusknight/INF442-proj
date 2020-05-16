@@ -17,20 +17,15 @@ int GHSNode::assign_id(int id_rank, int num_process)
     return id_rank;
 }
 
-//int GHSNode::get_idx_adj_out_node(int out_node)
-//{
-//    for (int i = 0; i < adj_out_edges.size(); i++) {
-//        if (adj_out_edges[i].v == out_node) return i;
-//    }
-//    return -1;
-//}
 
 GHSNode::GHSNode(vector<Edge> adj_edges)
 {
     id = -1;
     machine = nullptr;
-
+    GHSEdge _special_mark(-1, -1, DBL_MAX, GHSEdge::EdgeState::BASIC);
+    adj_out_edges[-1] = _special_mark;
     for (int i = 0; i < adj_edges.size(); ++i) {
+        if (adj_edges[i].u == adj_edges[i].v) continue;  // delete self ring
         GHSEdge ge(adj_edges[i]);
         adj_out_edges[ge.v] = ge;
 
@@ -46,6 +41,29 @@ GHSNode::GHSNode(vector<Edge> adj_edges)
     in_branch = -1;
 
     finished = false;
+}
+
+GHSNode::GHSNode(const GHSNode& g)
+{
+    machine = g.machine;
+    id = g.id;
+    finished = g.finished;
+
+    SN=g.SN;  // state
+    // vector<GHSEdge::EdgeState> SE;
+    FN=g.FN;  // fragemnt identity
+    LN=g.LN;  // level
+    find_count=g.find_count;
+
+    recv_msg = g.recv_msg;
+    //queue<int>recv_msg_from;
+
+    adj_out_edges = g.adj_out_edges;  // directed edges, adjacent edges
+
+    // for Test
+    best_edge = g.best_edge;
+    in_branch = g.in_branch;
+    test_edge = g.test_edge;
 }
 
 GHSNode::GHSNode()
@@ -187,7 +205,7 @@ void GHSNode::RespInit(int L, int F, GHSNode::NodeState S, int edge_id) // check
 
 void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_connect)
     if (SN == SLEEPING) WakeUp();
-    if (level < LN) {
+    if (level < LN) {  // absorb
         adj_out_edges[edge_id].state = GHSEdge::EdgeState::BRANCH;
         // send INIT (LN, FN, FN) on edge j;
         // comm.sendInitiate(LN, FN, SN, edge_id);
@@ -195,7 +213,7 @@ void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_conne
         if (SN == FIND) find_count++;
     }
     else {
-        if (adj_out_edges[edge_id].state == GHSEdge::EdgeState::BASIC) {
+        if (adj_out_edges[edge_id].state == GHSEdge::EdgeState::BASIC) {  // delay
             // place received message on end of queue
             // comm.recvConnect(level);
             GHSmsg msg;
@@ -208,10 +226,11 @@ void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_conne
             //recv_msg.emplace(msg);
             //recv_msg_from.emplace(edge_id);
         }
-        else {
+        else {  // merge
             // send Init (LN+1, w(j), FIND) on edge j
             // comm.sendInitiate(LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id);
-            machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id, id));
+            // machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id, id));
+            machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, FN, FIND, edge_id, id));
             // TODO: check double and int conversion (cost);
         }
     }
@@ -279,28 +298,15 @@ void GHSNode::Report()  // checked
 {
     if (find_count == 0 && test_edge < 0) {
         SN = FOUND;
-        finished = true; // TODO: !!!! MIGHT BE NOT HERE
+        // finished = true; // TODO: !!!! MIGHT BE NOT HERE
         // comm.sendReport(adj_out_edges[best_edge].cost, in_branch);
         machine->send_msg(GHSmsg(MsgType::REPORT, adj_out_edges[best_edge].cost, in_branch, id));
     }
 }
 
-void GHSNode::RespReport(int w, int edge_id)  // TODO: make it the same as the originalones
+void GHSNode::RespReport(double w, int edge_id)  // TODO: make it the same as the original ones
 {
-    if (w == DBL_MAX && best_edge <0)  // TODO: conditions not finished // TODO: check it!
-    {
-        finished = true;
-        /*
-        We need to send notify the other nodes on the chaine that the algorithm has terminated.
-        So, here, we send REPORT message with maxinum weights. 
-        */
-        for (auto ip = adj_out_edges.begin(); ip != adj_out_edges.end(); ip++) {
-            if (ip->second.state == GHSEdge::EdgeState::BRANCH && ip->first != in_branch) {
-                machine->send_msg(GHSmsg(MsgType::REPORT, DBL_MAX, ip->first, id));
-            }
-        }
-    }
-    // TODO: not identic HALT?
+    
     if (edge_id != in_branch) {
         find_count--;
         if (w < adj_out_edges[best_edge].cost) best_edge = edge_id;
@@ -311,13 +317,26 @@ void GHSNode::RespReport(int w, int edge_id)  // TODO: make it the same as the o
         //GHSmsg msg(MsgType::REPORT);
         //msg.argf = w;
         //comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
-        machine->emplace_recv_queue(GHSmsg(MsgType::REPORT, w, edge_id, id));
+        machine->emplace_recv_queue(GHSmsg(MsgType::REPORT, w, id, edge_id));
         //recv_msg.emplace(msg);
         //recv_msg_from.emplace(edge_id);
 
     }
         //comm.recvReport(w, edge_id);
     else if (w > adj_out_edges[best_edge].cost) ChangeCore();
+    else if (w == DBL_MAX && best_edge < 0)  // TODO: conditions not finished // TODO: check it!
+    {  // HALT
+        finished = true;
+        /*
+        We need to send notify the other nodes on the chaine that the algorithm has terminated.
+        So, here, we send REPORT message with maximum weights.
+        */
+        for (auto ip = adj_out_edges.begin(); ip != adj_out_edges.end(); ip++) {
+            if (ip->second.state == GHSEdge::EdgeState::BRANCH && ip->first != in_branch) {
+                machine->send_msg(GHSmsg(MsgType::REPORT, DBL_MAX, ip->first, id));
+            }
+        }
+    }
 }
 
 void GHSNode::ChangeCore()  // checked ok
@@ -595,6 +614,7 @@ void GHSMPI::print_node_states()
             cout << *i << " ";
         }
         if (in->second.getSN() != 0) cout << ")";
+        if (in->second.isFinished()) cout << "XX";
         cout << ";\t";
     }
     cout << endl;
@@ -652,7 +672,7 @@ void GHSMPI::init()
     string filename = "test_in.txt";
     // comm.init(0, NULL);
     comm.init(0, NULL); // MPI_Init
-
+    comm.commitType(NULL);
     MPI_Comm_size(comm.comm, &count_machine);
     MPI_Comm_rank(comm.comm, &rank);
     // rank from 0 to N-1
@@ -667,7 +687,27 @@ void GHSMPI::init()
 
     // read_file
     GraphInEdge gie;
-    gie.ReadFile(filename);
+    // gie.ReadFile(filename);
+    gie.addEdge(Edge(1, 2, 1));
+    gie.addEdge(Edge(2, 1, 1));
+    gie.addEdge(Edge(2, 3, 1));
+    gie.addEdge(Edge(3, 2, 1));
+    gie.addEdge(Edge(3, 4, 1));
+    gie.addEdge(Edge(4, 3, 1));
+    gie.addEdge(Edge(4, 5, 1));
+    gie.addEdge(Edge(5, 4, 1));
+    gie.addEdge(Edge(5, 6, 1));
+    gie.addEdge(Edge(6, 5, 1));
+    gie.addEdge(Edge(6, 7, 1));
+    gie.addEdge(Edge(7, 6, 1)); 
+    gie.addEdge(Edge(7, 1, 1));
+    gie.addEdge(Edge(1, 7, 1));
+    gie.addEdge(Edge(2, 6, 1));
+    gie.addEdge(Edge(6, 2, 1));
+    gie.addEdge(Edge(3, 5, 1));
+    gie.addEdge(Edge(5, 3, 1));
+
+
     auto adj_edge = gie.toAdjecentList();
     const int id_start_from = 1; // vertex id starting from 1
     int _lcl_vert_count = gie.getVertSize() / count_machine;
@@ -701,6 +741,8 @@ void GHSMPI::run_loop()
 
     // wake up the first node;
     nodes[beginning_node].WakeUp();
+
+    nodes[4].WakeUp();  // ######################################TODO delete
 
     while (!ask_all_nodes_if_finished()) {
 
@@ -785,10 +827,10 @@ void GHSMPI::exchange_with_all_machine()
     sdispl[0] = 0;
 
     // ** important ** byte conversion
-    for (int i = 0; i < count_machine; i++) {
-        send_counts[i] *= sizeof(GHSmsg);
-        recv_counts[i] *= sizeof(GHSmsg);
-    }
+    //for (int i = 0; i < count_machine; i++) {
+    //    send_counts[i] *= sizeof(GHSmsg);
+    //    recv_counts[i] *= sizeof(GHSmsg);
+    //}
     for (int i = 1; i < count_machine; i++) {
         sdispl[i] = send_counts[i - 1] + sdispl[i - 1];
         rdispl[i] = recv_counts[i - 1] + rdispl[i - 1];
@@ -802,15 +844,17 @@ void GHSMPI::exchange_with_all_machine()
     }
 
     vector<GHSmsg> sbuffer;
-    recv_buffers.resize(rsize / sizeof(GHSmsg));
+    //recv_buffers.resize(rsize / sizeof(GHSmsg));
+    recv_buffers.resize(rsize);
 
     for (auto im = send_buffers.begin(); im != send_buffers.end(); im++)
         for (auto imsg = im->second.begin(); imsg != im->second.end(); imsg++)
             sbuffer.push_back(*imsg);
 
 #ifndef NONMPI
-    MPI_Alltoallv(sbuffer.data(), send_counts.data(), this->sdispl, comm.getType(),
+    int test_val = MPI_Alltoallv(sbuffer.data(), send_counts.data(), this->sdispl, comm.getType(),
         this->recv_buffers.data(), recv_counts.data(), this->rdispl, comm.getType(), comm.comm);
+    //cout << "[MPI] " << test_val << endl;
 #endif // !NONMPI
 
 #ifdef NONMPI

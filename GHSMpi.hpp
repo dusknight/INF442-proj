@@ -86,14 +86,15 @@ public:
 	int commRank() {  return MPI_Comm_rank(comm, &PE_num); }
 	void finalise() { MPI_Finalize(); }
 	void commitType(MPI_User_function* f) {
-		const int blocklen[] = { 1, 1, 1, 1, 1, 1};
-		MPI_Aint disp[6] = {
+		const int blocklen[] = { 1, 1, 1, 1, 1, 1, 1};
+		MPI_Aint disp[7] = {
 			offsetof(GHSmsg, type),
 			offsetof(GHSmsg, arg1),
 			offsetof(GHSmsg, arg2),
 			offsetof(GHSmsg, arg3),
 			offsetof(GHSmsg, argf),
-			offsetof(GHSmsg, dest_vid)
+			offsetof(GHSmsg, dest_vid),
+			offsetof(GHSmsg, src_vid)
 		};
 		//MPI_Get_address((void*)demomsg.type, disp);
 		//MPI_Get_address((void*)demomsg.arg1, disp+1);
@@ -107,6 +108,7 @@ public:
 			MPI_INT,
 			MPI_INT,
 			MPI_DOUBLE,
+			MPI_INT,
 			MPI_INT
 		};
 
@@ -194,7 +196,10 @@ private:
 public:
 
 	GHSNode(int _id, vector<Edge> _edges) :id(_id) { 
+		GHSEdge _special_mark(-1, -1, DBL_MAX, GHSEdge::EdgeState::BASIC);
+		adj_out_edges[-1] = _special_mark;
 		for (int i = 0; i < _edges.size(); ++i) {
+			if (_edges[i].u == _edges[i].v) continue;  // delete self ring
 			GHSEdge ge(_edges[i]);
 			adj_out_edges[ge.v] = ge;
 			// adj_out_edges.push_back(ge);
@@ -214,6 +219,7 @@ public:
 		finished = false;
 	}
 	GHSNode(vector<Edge> edges);
+	GHSNode(const GHSNode &g);
 	GHSNode();
 	void set_machine(GHSMPI* _machine) { machine = _machine; }
 	int getSN() { return SN; }
@@ -236,7 +242,7 @@ public:
 	void RespReject(int edge_id);
 
 	void Report();
-	void RespReport(int w, int edge_id);
+	void RespReport(double w, int edge_id);
 
 	void ChangeCore();
 	void RespChangeCore();
