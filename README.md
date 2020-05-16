@@ -9,10 +9,10 @@ I have no idea about what should be written here.
 
 TODO
 ----
-[x] Task 1
-[x] Task 2
-[ ] Task 3
-[ ] Task 4
-[x] TD3 transplantation
-[ ]	Task 5
-[ ] Task 6
+- [x] Task 1
+- [x] Task 2
+- [ ] Task 3
+- [ ] Task 4
+- [x] TD3 transplantation
+- [ ]	Task 5
+- [ ] Task 6
