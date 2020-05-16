@@ -42,17 +42,18 @@ enum MsgType {
 	CONNECT,
 	REJECT,
 	ACCEPT,
+	ERR_TYPE,
 };
 
 struct GHSmsg {
-	int type;
+	MsgType type;
 	int arg1;
 	int arg2;
 	int arg3;
 	double argf;
 	int dest_vid;
 	int src_vid;
-	GHSmsg() { type = arg1 = arg2 = arg3 = argf = dest_vid = src_vid = -1; }
+	GHSmsg() { type= ERR_TYPE;  arg1 = arg2 = arg3 = argf = dest_vid = src_vid = -1; }
 	GHSmsg(MsgType mt, int _dest, int _src) :type(mt), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _dest, int _src) :type(mt), arg1(_arg1), dest_vid(_dest), src_vid(_src) {};
 	GHSmsg(MsgType mt, int _arg1, int _arg2, int _dest, int _src) :type(mt), arg1(_arg1), arg2(_arg2), dest_vid(_dest), src_vid(_src) {};
