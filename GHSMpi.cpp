@@ -9,7 +9,8 @@
 #include<cassert>
 
 // #define NONMPI
-const bool PRINT_MSG = false;
+const bool PRINT_MSG = true;
+const bool PRINT_MPI_LOG_DETAIL = true;
 using namespace std;
 
 int GHSNode::assign_id(int id_rank, int num_process)
@@ -527,7 +528,9 @@ void GHSMPI::run_loop()
 		if (PRINT_MSG) print_node_states();
 		exec_send_recv();
 	}
+	cout << "[INFO] --- process calculation finished. id=" << rank << endl;
 	print_node_states();
+	comm.barrier();
 	finalize();
 
 }
@@ -569,6 +572,7 @@ void GHSMPI::finalize()
 	// TODO: join all process MPI_join()
 	MPI_Finalize();
 	cout << "--- Node rank " << rank << " (out of " << count_machine << ") is finished." << endl;
+	system("pause");
 
 }
 
@@ -593,14 +597,28 @@ void GHSMPI::exchange_with_all_machine()
 	for (int i = 0; i < count_machine; i++) {
 		send_counts[i] = send_buffers[i].size();
 	}
+	recv_counts.resize(count_machine);
 
-	MPI_Alltoall(send_counts.data(), count_machine, MPI_INT,
-		recv_counts.data(), count_machine, MPI_INT,
+	if (PRINT_MPI_LOG_DETAIL) {
+		cout << "[INFO] in " << rank << ": count_machine : " << count_machine << endl;  //  << "size calculated: s=" << ssize << ", r=" << rsize << endl;
+		cout << "[INFO] in " << rank << ": BEFORE SEND COUNT : ";  //  << "size calculated: s=" << ssize << ", r=" << rsize << endl;
+
+		for (int i = 0; i < count_machine; i++) {
+			cout << send_buffers[i].size() << ", ";
+		}
+		cout << endl;
+	}
+	MPI_Alltoall(send_counts.data(), 1, MPI_INT,
+		recv_counts.data(), 1, MPI_INT,
 		comm.comm); // exchange with each nodes
-
-// displacement
-//int* rdispl = new int[this->count_machine];
-//int* sdispl = new int[this->count_machine];
+	if (PRINT_MPI_LOG_DETAIL) {
+		cout << "[INFO] in " << rank << ": AFTER  SEND COUNT : ";
+		for (int i = 0; i < count_machine; i++) {
+			cout << recv_counts[i] << ", ";
+		}
+		cout << endl;
+	}
+	// displacement
 	rdispl[0] = 0;
 	sdispl[0] = 0;
 
@@ -620,7 +638,8 @@ void GHSMPI::exchange_with_all_machine()
 		ssize += send_counts[i];
 		rsize += recv_counts[i];
 	}
-
+	if(PRINT_MPI_LOG_DETAIL)
+		cout << "[INFO] in " << rank << ", " << "size calculated: s="<<ssize<< ", r="<<rsize << endl;
 	vector<GHSmsg> sbuffer;
 	//recv_buffers.resize(rsize / sizeof(GHSmsg));
 	recv_buffers.resize(rsize);
@@ -632,7 +651,7 @@ void GHSMPI::exchange_with_all_machine()
 #ifndef NONMPI
 	int test_val = MPI_Alltoallv(sbuffer.data(), send_counts.data(), this->sdispl, comm.getType(),
 		this->recv_buffers.data(), recv_counts.data(), this->rdispl, comm.getType(), comm.comm);
-	//cout << "[MPI] " << test_val << endl;
+	if(PRINT_MPI_LOG_DETAIL) cout << "[MPI] in "<< rank<<", " << test_val << endl;
 #endif // !NONMPI
 
 #ifdef NONMPI
