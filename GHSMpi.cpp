@@ -369,9 +369,20 @@ bool GHSMPI::ask_all_nodes_if_finished()
 {
 	for (auto in = nodes.begin(); in != nodes.end(); in++) {
 		if (!in->second.isFinished()) {
-			is_all_finished = false;
+			is_all_finished = 0;
 			return false;
 		}
+	}
+	is_all_finished = 1;
+	cout << "[INFO] !!! proc " << rank << " finished." << endl;
+	return true;
+}
+
+bool GHSMPI::ask_all_processes_if_finished()
+{
+	if (!ask_all_nodes_if_finished()) return false;  // this process is still working
+	for (int i = 0; i < count_machine; i++) {
+		if (process_working_status[i]) return false;
 	}
 	return true;
 }
@@ -455,9 +466,11 @@ void GHSMPI::init()
 	MPI_Comm_rank(comm.comm, &rank);
 	// rank from 0 to N-1
 
+	process_working_status.resize(count_machine);
 	for (int i = 0; i < count_machine; i++) {
 		vector<GHSmsg> gn;
 		send_buffers[i] = gn;
+		process_working_status[i] = 1;
 	}
 	// send_buffers.resize(count_machine);
 	rdispl = new int[count_machine];
@@ -523,10 +536,11 @@ void GHSMPI::run_loop()
 	//nodes[4].WakeUp();  // ######################################TODO delete
 	//nodes[6].WakeUp();  // ######################################TODO delete
 
-	while (!ask_all_nodes_if_finished()) {
-
+	/*while (!ask_all_nodes_if_finished()) {*/
+	while (!ask_all_processes_if_finished()) {
 		if (PRINT_MSG) print_node_states();
 		exec_send_recv();
+		// comm.barrier();
 	}
 	cout << "[INFO] --- process calculation finished. id=" << rank << endl;
 	print_node_states();
@@ -617,6 +631,19 @@ void GHSMPI::exchange_with_all_machine()
 			cout << recv_counts[i] << ", ";
 		}
 		cout << endl;
+	}
+
+	// working status
+	int working = 1 - is_all_finished;
+	for (int i = 0; i < count_machine; i++) process_working_status[i] = 0;
+	process_working_status[rank] = working;
+	MPI_Allgather(&working, 1, MPI_INT, process_working_status.data(), count_machine, MPI_INT, comm.comm);
+	if (PRINT_MPI_LOG_DETAIL) {
+		cout << "[INFO] in " << rank << ": WORKING STAT : [";
+		for (int i = 0; i < count_machine; i++) {
+			cout << process_working_status[i] << ", ";
+		}
+		cout <<"]"<< endl;
 	}
 	// displacement
 	rdispl[0] = 0;

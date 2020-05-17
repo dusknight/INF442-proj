@@ -258,7 +258,8 @@ private:
 	vector<int> vertices_id;
 	map<int, GHSNode> nodes;
 	map<int, int> vert2machine; //vertice id to machine;
-	bool is_all_finished;
+	int is_all_finished;
+	vector<int> process_working_status;
 
 	queue<GHSmsg> to_send;
 	queue<GHSmsg> recved_this_time;
@@ -279,6 +280,7 @@ public:
 
 	int assign_vertice_to_machine(int v_id);  // values will be added to vert2machine
 	bool ask_all_nodes_if_finished();
+	bool ask_all_processes_if_finished();
 	void print_node_states();
 
 	void send_msg(GHSmsg msg);
