@@ -8,8 +8,9 @@
 #include<iostream>
 #include<cassert>
 
-#define NONMPI
+// #define NONMPI
 const bool PRINT_MSG = true;
+const bool PRINT_MPI_LOG_DETAIL = true;
 using namespace std;
 
 int GHSNode::assign_id(int id_rank, int num_process)
@@ -181,7 +182,7 @@ void GHSNode::WakeUp() {  // checked ok
 	machine->send_msg(GHSmsg(MsgType::CONNECT, 0, out_node, id));
 }
 
-void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int from_node) // checked (a little different)
+void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int from_node) // ============= HERE LIES THE LAST PROBLEM
 {
 	// CHECK : have difference with GH.
 	LN = L;
@@ -191,15 +192,21 @@ void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int from_node) // 
 	best_edge = -1;
 	// double best_wt = DBL_MAX;
 	for (auto ip = adj_out_edges.begin(); ip != adj_out_edges.end(); ip++) {
-		if (ip->first != from_node && ip->second.state == GHSEdge::EdgeState::BRANCH) {
-			// send INIT (L, F, S) on edge i
-			machine->send_msg(GHSmsg(MsgType::INIT, L, F, S, ip->first, id));
-			if (S == FIND) find_count++;
-		}
-		if (S == FIND) Test();
-	}
+		//if (ip->first != from_node && ip->second.state == GHSEdge::EdgeState::BRANCH) {
+		//	// send INIT (L, F, S) on edge i
+		//	machine->send_msg(GHSmsg(MsgType::INIT, L, F, S, ip->first, id));
+		//	if (S == FIND) find_count++;
+		//}
+		//if (S == FIND) Test();
 
+		if (ip->first == from_node || ip->second.state != GHSEdge::EdgeState::BRANCH) continue;
+		// send INIT (L, F, S) on edge i
+		machine->send_msg(GHSmsg(MsgType::INIT, L, F, S, ip->first, id));
+		if (S == FIND) find_count++;
+	}
+	if (S == FIND) Test();
 }
+
 
 void GHSNode::RespConnect(int level, int from_node) { // checked ok (process_connect)
 	if (SN == SLEEPING) WakeUp();
@@ -277,13 +284,13 @@ void GHSNode::RespReject(int from_node)  // checked ok (ok)
 
 void GHSNode::Report()  // checked
 {
-	if (find_count <= 0 && test_edge < 0) {  // TODO: check here
-		SN = FOUND;;
+	if (find_count == 0 && test_edge < 0) {  // THIS LINE IS IMPORTANT    ######
+		SN = FOUND;
 		machine->send_msg(GHSmsg(MsgType::REPORT, adj_out_edges[best_edge].cost, in_branch, id));
 	}
 }
 
-void GHSNode::RespReport(double w, int from_edge)  // TODO: check (OK?)
+void GHSNode::RespReport(double w, int from_edge)  // TODO: check (OK?
 {
 	if (from_edge != in_branch) {
 		find_count--;
@@ -425,7 +432,7 @@ void GHSMPI::exec_send_recv()
 		recved_this_time.pop();
 		int node_id = msg.dest_vid;
 		// if(!nodes[node_id].isFinished())  // still living
-			nodes[node_id].MsgHandler(msg, msg.src_vid);
+		nodes[node_id].MsgHandler(msg, msg.src_vid);
 	}
 
 	while (!recved_later.empty()) {  // the messages retarded in the last loop
@@ -513,15 +520,17 @@ void GHSMPI::run_loop()
 	// wake up the first node;
 	nodes[beginning_node].WakeUp();
 
-	nodes[4].WakeUp();  // ######################################TODO delete
-	nodes[6].WakeUp();  // ######################################TODO delete
+	//nodes[4].WakeUp();  // ######################################TODO delete
+	//nodes[6].WakeUp();  // ######################################TODO delete
 
 	while (!ask_all_nodes_if_finished()) {
 
-		if(PRINT_MSG) print_node_states();
+		if (PRINT_MSG) print_node_states();
 		exec_send_recv();
 	}
+	cout << "[INFO] --- process calculation finished. id=" << rank << endl;
 	print_node_states();
+	comm.barrier();
 	finalize();
 
 }
@@ -563,6 +572,7 @@ void GHSMPI::finalize()
 	// TODO: join all process MPI_join()
 	MPI_Finalize();
 	cout << "--- Node rank " << rank << " (out of " << count_machine << ") is finished." << endl;
+	system("pause");
 
 }
 
@@ -587,21 +597,35 @@ void GHSMPI::exchange_with_all_machine()
 	for (int i = 0; i < count_machine; i++) {
 		send_counts[i] = send_buffers[i].size();
 	}
+	recv_counts.resize(count_machine);
 
-	MPI_Alltoall(send_counts.data(), count_machine, MPI_INT,
-		recv_counts.data(), count_machine, MPI_INT,
+	if (PRINT_MPI_LOG_DETAIL) {
+		cout << "[INFO] in " << rank << ": count_machine : " << count_machine << endl;  //  << "size calculated: s=" << ssize << ", r=" << rsize << endl;
+		cout << "[INFO] in " << rank << ": BEFORE SEND COUNT : ";  //  << "size calculated: s=" << ssize << ", r=" << rsize << endl;
+
+		for (int i = 0; i < count_machine; i++) {
+			cout << send_buffers[i].size() << ", ";
+		}
+		cout << endl;
+	}
+	MPI_Alltoall(send_counts.data(), 1, MPI_INT,
+		recv_counts.data(), 1, MPI_INT,
 		comm.comm); // exchange with each nodes
-
-// displacement
-//int* rdispl = new int[this->count_machine];
-//int* sdispl = new int[this->count_machine];
+	if (PRINT_MPI_LOG_DETAIL) {
+		cout << "[INFO] in " << rank << ": AFTER  SEND COUNT : ";
+		for (int i = 0; i < count_machine; i++) {
+			cout << recv_counts[i] << ", ";
+		}
+		cout << endl;
+	}
+	// displacement
 	rdispl[0] = 0;
 	sdispl[0] = 0;
 
 	// ** important ** byte conversion
 	//for (int i = 0; i < count_machine; i++) {
-	//    send_counts[i] *= sizeof(GHSmsg);
-	//    recv_counts[i] *= sizeof(GHSmsg);
+	//	send_counts[i] *= sizeof(GHSmsg);
+	//	recv_counts[i] *= sizeof(GHSmsg);
 	//}
 	for (int i = 1; i < count_machine; i++) {
 		sdispl[i] = send_counts[i - 1] + sdispl[i - 1];
@@ -614,7 +638,8 @@ void GHSMPI::exchange_with_all_machine()
 		ssize += send_counts[i];
 		rsize += recv_counts[i];
 	}
-
+	if(PRINT_MPI_LOG_DETAIL)
+		cout << "[INFO] in " << rank << ", " << "size calculated: s="<<ssize<< ", r="<<rsize << endl;
 	vector<GHSmsg> sbuffer;
 	//recv_buffers.resize(rsize / sizeof(GHSmsg));
 	recv_buffers.resize(rsize);
@@ -626,7 +651,7 @@ void GHSMPI::exchange_with_all_machine()
 #ifndef NONMPI
 	int test_val = MPI_Alltoallv(sbuffer.data(), send_counts.data(), this->sdispl, comm.getType(),
 		this->recv_buffers.data(), recv_counts.data(), this->rdispl, comm.getType(), comm.comm);
-	//cout << "[MPI] " << test_val << endl;
+	if(PRINT_MPI_LOG_DETAIL) cout << "[MPI] in "<< rank<<", " << test_val << endl;
 #endif // !NONMPI
 
 #ifdef NONMPI
