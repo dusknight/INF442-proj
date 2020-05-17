@@ -12,7 +12,7 @@ using namespace std;
 
 int main()
 {
-    string filename = "test_in.txt";
+    string filename = "Graph_Input_test.txt";
     GraphInEdge* gie = new GraphInEdge();
     gie->ReadFile(filename);
     //gie->addEdge(Edge(1, 2, 2));
@@ -21,14 +21,13 @@ int main()
     //gie->addEdge(Edge(4, 5, 1));
     //gie->addEdge(Edge(1, 3, 3));
     //gie->addEdge(Edge(1, 4, 1));
-    cout << gie->getGraphName() << endl;
+   // cout << gie->getGraphName() << endl;
 
     PrimPaSolver pps(gie);
     //pps.CalcMST();
-    MPI_Init(NULL, NULL);
+  
     cout << pps.CalcMST() << endl;
-    MPI_Finalize();
-    pps.printMST();
+    //pps.printMST();
 	
     //KruskalSolver Kruskal(gie);
     ////cout << Kruskal.CalcMST() << endl;

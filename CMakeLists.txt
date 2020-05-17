@@ -10,9 +10,9 @@ add_executable(task1 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kru
 
 add_executable(task2 Graph.h Graph.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task2.cpp)
 
-add_executable(task3 Graph.h GraphMpi.hpp PrimDistributed.hpp PrimDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task3.cpp
-    Graph.cpp GraphMpi.cpp Task3.cpp)
-target_link_libraries(task3 ${MPI_LIBRARIES})
+add_executable(task3Prim Graph.h  PrimDistributed.hpp PrimDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp 
+    Graph.cpp  Task3Prim.cpp)
+target_link_libraries(task3Prim ${MPI_LIBRARIES})
 
 add_executable(task3Boruvka Graph.h  BoruvkaDistributed.hpp BoruvkaDistributed.cpp PrimAndBoruvka.cpp PrimAndBoruvka.hpp Kruskal.hpp Kruskal.cpp Task3Boruvka.cpp
     Graph.cpp  )
