@@ -179,23 +179,21 @@ void GHSNode::WakeUp() {  // checked ok
     
     // send Connect(0) on edge m;
     machine->send_msg(GHSmsg(MsgType::CONNECT, 0, out_node, id));
-    // comm.sendConnect(0, out_node);
 }
 
-void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int edge_id) // checked (a little different)
+void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int from_node) // checked (a little different)
 {
     // CHECK : have difference with GH.
     LN = L;
     FN = F; 
     SN = S;
-    in_branch = edge_id;
+    in_branch = from_node;
     best_edge = -1;
     // double best_wt = DBL_MAX;
     for (auto ip = adj_out_edges.begin(); ip != adj_out_edges.end(); ip++) {
-        if(ip->first != edge_id && ip->second.state == GHSEdge::EdgeState::BRANCH) {
+        if(ip->first != from_node && ip->second.state == GHSEdge::EdgeState::BRANCH) {
             // send INIT (L, F, S) on edge i
             machine->send_msg(GHSmsg(MsgType::INIT, L, F, S, ip->first, id));
-            // comm.sendInitiate(L, F, S, adj_out_edges[i].v);
             if (S == FIND) find_count++;
         }
         if (S == FIND) Test();
@@ -203,35 +201,27 @@ void GHSNode::RespInit(int L, double F, GHSNode::NodeState S, int edge_id) // ch
     
 }
 
-void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_connect)
+void GHSNode::RespConnect(int level, int from_node) { // checked ok (process_connect)
     if (SN == SLEEPING) WakeUp();
     if (level < LN) {  // absorb
-        adj_out_edges[edge_id].state = GHSEdge::EdgeState::BRANCH;
+        adj_out_edges[from_node].state = GHSEdge::EdgeState::BRANCH;
         // send INIT (LN, FN, FN) on edge j;
-        // comm.sendInitiate(LN, FN, SN, edge_id);
-        machine->send_msg(GHSmsg(MsgType::INIT, LN, FN, SN, edge_id, id));
+        machine->send_msg(GHSmsg(MsgType::INIT, LN, FN, SN, from_node, id));
         if (SN == FIND) find_count++;
     }
     else {
-        if (adj_out_edges[edge_id].state == GHSEdge::EdgeState::BASIC) {  // delay
+        if (adj_out_edges[from_node].state == GHSEdge::EdgeState::BASIC) {  // delay
             // place received message on end of queue
-            // comm.recvConnect(level);
             GHSmsg msg;
             msg.type = MsgType::CONNECT;
             msg.arg1 = level;
-            msg.src_vid = edge_id;
+            msg.src_vid = from_node;
             msg.dest_vid = id;
-            // comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
             machine->emplace_recv_queue(msg);
-            //recv_msg.emplace(msg);
-            //recv_msg_from.emplace(edge_id);
         }
         else {  // merge
             // send Init (LN+1, w(j), FIND) on edge j
-            // comm.sendInitiate(LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id);
-             machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[edge_id].cost, FIND, edge_id, id));
-            //machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, FN, FIND, edge_id, id));
-            // TODO: check double and int conversion (cost);
+             machine->send_msg(GHSmsg(MsgType::INIT, LN + 1, adj_out_edges[from_node].cost, FIND, from_node, id));
         }
     }
 }
@@ -239,7 +229,7 @@ void GHSNode::RespConnect(int level, int edge_id) { // checked ok (process_conne
 void GHSNode::Test()  // checked
 { 
     // TODO - check:::: CHECKED
-    int test_edge = find_test_edge();
+    test_edge = find_test_edge();
     if (test_edge > 0){ // found
         // comm.sendTest(LN, FN, test_edge);
         machine->send_msg(GHSmsg(MsgType::TEST, LN, FN, test_edge, id));
@@ -250,79 +240,62 @@ void GHSNode::Test()  // checked
 
 }
 
-void GHSNode::RespTest(int L, double F, int edge_id)  // checked ok
+void GHSNode::RespTest(int L, double F, int from_node)  // checked ok (ok)
 {
     if (SN == SLEEPING) WakeUp();  
 
     if (L > LN) // place the received message at the end of the queue
-        //comm.recvTest(L, F, edge_id);
-    {
-        GHSmsg msg(MsgType::TEST, L, F);  
-        // comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
-        machine->emplace_recv_queue(GHSmsg(MsgType::TEST, L, F, id, edge_id));  //TODOL duplicated ????????
-        //recv_msg.emplace(msg);
-        //recv_msg_from.emplace(edge_id);
-    }
+        machine->emplace_recv_queue(GHSmsg(MsgType::TEST, L, F, id, from_node));  
     else if (F != FN) // comm.sendAccept(edge_id);
-        machine->send_msg(GHSmsg(MsgType::ACCEPT, edge_id, id));
+        machine->send_msg(GHSmsg(MsgType::ACCEPT, from_node, id));
     else {
-        if (adj_out_edges[edge_id].state == GHSEdge::EdgeState::BASIC)
-            adj_out_edges[edge_id].state = GHSEdge::EdgeState::REJECTED;
-
-        if (test_edge != edge_id)
+        if (adj_out_edges[from_node].state == GHSEdge::EdgeState::BASIC)
+            adj_out_edges[from_node].state = GHSEdge::EdgeState::REJECTED;
+        if (test_edge != from_node)
             // comm.sendReject(edge_id);
-            machine->send_msg(GHSmsg(MsgType::REJECT, edge_id, id));
+            machine->send_msg(GHSmsg(MsgType::REJECT, from_node, id));
         else Test();
     }
 }
 
-void GHSNode::RespAccept(int edge_id)  // checked ok
+void GHSNode::RespAccept(int from_node)  // checked ok (ok)
 {
     test_edge = -1;
-    if (Edge::cmp(adj_out_edges[edge_id], adj_out_edges[best_edge])) // cost: a < b
-        best_edge = edge_id;
+    if (Edge::cmp(adj_out_edges[from_node], adj_out_edges[best_edge])) // cost: a < b
+        best_edge = from_node;
 
     Report();
 }
 
-void GHSNode::RespReject(int edge_id)  // checked ok (after correction)
+void GHSNode::RespReject(int from_node)  // checked ok (ok)
 {
-    if(adj_out_edges[edge_id].state == GHSEdge::EdgeState::BASIC)
-        adj_out_edges[edge_id].state = GHSEdge::EdgeState::REJECTED;
-    // comm.sendReject(edge_id);
-    // machine->send_msg(GHSmsg(MsgType::REJECT, edge_id, id));  // wrong
+    if(adj_out_edges[from_node].state == GHSEdge::EdgeState::BASIC)
+        adj_out_edges[from_node].state = GHSEdge::EdgeState::REJECTED;
+
     Test();
 }
 
 void GHSNode::Report()  // checked
 {
     if (find_count == 0 && test_edge < 0) {
-        SN = FOUND;
-        // finished = true; // TODO: !!!! MIGHT BE NOT HERE
-        // comm.sendReport(adj_out_edges[best_edge].cost, in_branch);
+        SN = FOUND;;
         machine->send_msg(GHSmsg(MsgType::REPORT, adj_out_edges[best_edge].cost, in_branch, id));
     }
 }
 
-void GHSNode::RespReport(double w, int from_edge)  // TODO: make it the same as the original ones
+void GHSNode::RespReport(double w, int from_edge)  // TODO: check (OK?)
 {
     if (from_edge != in_branch) {
         find_count--;
-        if (w < adj_out_edges[best_edge].cost) best_edge = from_edge;
+        if (w < adj_out_edges[best_edge].cost) best_edge = from_edge;  // update new best edge
         Report();
     }
     else if (SN == FIND) // place the received message at the end of queue
     {
-        //GHSmsg msg(MsgType::REPORT);
-        //msg.argf = w;
-        //comm.recv_queue.push(pair<int, GHSmsg>(edge_id, msg));
         machine->emplace_recv_queue(GHSmsg(MsgType::REPORT, w, id, from_edge));
-        //recv_msg.emplace(msg);
-        //recv_msg_from.emplace(edge_id);
-
     }
-        //comm.recvReport(w, edge_id);
     else if (w > adj_out_edges[best_edge].cost) ChangeCore();
+    // The algo is FININSHED 
     else if (w == DBL_MAX && best_edge < 0)  // TODO: conditions not finished // TODO: check it!
     {  // HALT
         finished = true;
@@ -448,7 +421,7 @@ void GHSMPI::exec_send_recv()
         GHSmsg msg = recved_this_time.front();
         recved_this_time.pop();
         int node_id = msg.dest_vid;
-        if(!nodes[node_id].isFinished())  // still living
+        // if(!nodes[node_id].isFinished())  // still living
             nodes[node_id].MsgHandler(msg, msg.src_vid);
     }
 
@@ -544,7 +517,7 @@ void GHSMPI::run_loop()
         print_node_states();
         exec_send_recv();
     }
-
+    print_node_states();
     finalize();
 
 }
