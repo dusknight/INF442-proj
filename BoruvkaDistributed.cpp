@@ -38,6 +38,7 @@ double BoruvkaPaSolver::CalcMST()
 
 	const int taille = graph->getVertSize();
 
+
 	double ans = 0; //所求边权之和
 	int NumEdge = 0; //记录最小生成树边数
 	const int TailleEdges = graph->edges.size(); //图的边数
@@ -45,13 +46,13 @@ double BoruvkaPaSolver::CalcMST()
 	for (int i = 0; i < graph->getVertSize() + 1; i++) { father[i] = i; }
 	vector<int> cheapest(graph->getVertSize() + 1); //每个components在当前步要加入的边
 	int NumCompos = graph->getVertSize() + 1; //连通分支数目+1
-	
+
 	vector<int> edges_mst = {};
 
 	MPI_Init(NULL, NULL);
 	int world_size;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-	assert(world_size > 1);
+	//assert(world_size > 1);
 
 	int world_rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -59,19 +60,20 @@ double BoruvkaPaSolver::CalcMST()
 	int number_per_process[2]; //分配给每个进程指定的处理边
 	if (world_rank != world_size - 1)
 	{
-		number_per_process[0] = world_rank * (int)(TailleEdges / world_size) + 1;
-		number_per_process[1] = number_per_process[0] + (int)(TailleEdges / world_size);
+		number_per_process[0] = world_rank * (int)(TailleEdges / world_size);
+		number_per_process[1] = number_per_process[0] + (int)(TailleEdges / world_size) - 1;
 	}
 	if (world_rank == world_size - 1)
 	{
-		number_per_process[0] = world_rank * (int)(TailleEdges / world_size) + 1;
-		number_per_process[1] = TailleEdges;
+		number_per_process[0] = world_rank * (int)(TailleEdges / world_size);
+		number_per_process[1] = TailleEdges - 1;
 	}
 	MPI_Barrier(MPI_COMM_WORLD); //Wait until all processes are ready
+	cout << "From " << number_per_process[0] << " to " << number_per_process[1] << endl;
 
-	
 	while (NumCompos > 2) //当分支数目大于等于2
 	{
+		cout << "zhemeduobian "<<NumEdge << " World " <<world_rank<<endl;
 		vector<int> temp = {};
 		for (int i = 0; i < graph->getVertSize() + 1; i++)
 		{
@@ -80,12 +82,12 @@ double BoruvkaPaSolver::CalcMST()
 		unordered_set<int> setcomponents(temp.begin(), temp.end()); //存储目前的分支
 		vector<int> components(setcomponents.begin(), setcomponents.end());
 		NumCompos = components.size();
-		
+		//cout << NumCompos << endl;
+
 		for (int i = 0; i < graph->getVertSize() + 1; i++) { cheapest[i] = -1; } //初始化每个components在当前步要加入的边为 -1
-
-
-	for (int i = number_per_process[0]; i < number_per_process[1] + 1; i++) //每个进程遍历边
+		for (int i = number_per_process[0]; i < number_per_process[1] + 1; i++) //每个进程遍历边
 		{
+			//cout << "A" << world_rank << endl;
 			int faU = findFather(father, graph->edges[i].u); //查询端点u所在集合的根结点
 			int faV = findFather(father, graph->edges[i].v);
 			int cost = graph->edges[i].cost;
@@ -129,13 +131,12 @@ double BoruvkaPaSolver::CalcMST()
 
 		MPI_Barrier(MPI_COMM_WORLD);
 
-		MPI_Gather(cheapest.data(), graph->getVertSize() + 1, MPI_INT, 
-					CollCheapest.data(), graph->getVertSize() + 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Gather(cheapest.data(), graph->getVertSize() + 1, MPI_INT,
+		           CollCheapest.data(), graph->getVertSize() + 1, MPI_INT, 0, MPI_COMM_WORLD);
 
 
-
-		if(world_rank==0)//主进程找出最便宜的边
-		{		
+		if (world_rank == 0) //主进程找出最便宜的边
+		{
 			for (int i = 0; i < NumCompos; i++)
 			{
 				int cur = components[i]; //现在考虑的component
@@ -143,8 +144,10 @@ double BoruvkaPaSolver::CalcMST()
 				{
 					for (int i = 0; i < world_rank; i++) //遍历每个进程传回来的数据
 					{
-						int faU = findFather(father, graph->edges[CollCheapest[cur +  i * (graph->getVertSize()+1)]].u); //查询端点u所在集合的根结点
-						int faV = findFather(father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].v);
+						int faU = findFather(
+							father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].u); //查询端点u所在集合的根结点
+						int faV = findFather(
+							father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].v);
 						int cost = graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].cost;
 						if (faU != faV)
 						{
@@ -176,7 +179,7 @@ double BoruvkaPaSolver::CalcMST()
 				}
 			}
 
-			for (int i = 0; i < NumCompos; i++)  //把每个成分最近的边加入树中，并收缩边
+			for (int i = 0; i < NumCompos; i++) //把每个成分最近的边加入树中，并收缩边
 			{
 				int cur = components[i];
 				if (cur != 0)
@@ -195,25 +198,25 @@ double BoruvkaPaSolver::CalcMST()
 						}
 					}
 				}
-			}			
+			}
 		}
-		MPI_Barrier(MPI_COMM_WORLD);
 
+		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Bcast(father.data(), graph->getVertSize() + 1, MPI_INT, 0, MPI_COMM_WORLD); //广播father到各个进程
 		MPI_Barrier(MPI_COMM_WORLD);
 
 		vector<int> temp2 = {};
-		for (int i = 0; i < graph->getVertSize() + 1; i++){temp2.push_back(findFather(father, i));}
+		for (int i = 0; i < graph->getVertSize() + 1; i++) { temp2.push_back(findFather(father, i)); }
 		std::unordered_set<int> setcomponents2(temp2.begin(), temp2.end()); //更新存储目前的分支
 		vector<int> components2(setcomponents2.begin(), setcomponents2.end());
-		NumCompos = components2.size();//更新分支数目
+		NumCompos = components2.size(); //更新分支数目
 	}
 
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
-	
+
 	if (world_rank != 0) { return -2; }
-	
+
 	return ans;
 }
 

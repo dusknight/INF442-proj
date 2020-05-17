@@ -91,6 +91,7 @@ double PrimPaSolver::CalcMST()
 	
 	while (count < taille) //控制循环
 	{
+		cout << "A" << world_rank << endl;
 		count += 1;
 
 		
