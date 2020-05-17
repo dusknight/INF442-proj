@@ -73,7 +73,7 @@ double BoruvkaPaSolver::CalcMST()
 
 	while (NumCompos > 2) //当分支数目大于等于2
 	{
-		cout << "zhemeduobian "<<NumEdge << " World " <<world_rank<<endl;
+		//cout << "zhemeduobian "<<NumEdge << " World " <<world_rank<<endl;
 		vector<int> temp = {};
 		for (int i = 0; i < graph->getVertSize() + 1; i++)
 		{
@@ -194,6 +194,7 @@ double BoruvkaPaSolver::CalcMST()
 							MSTedges.push_back(cheapest[cur]);
 							edges_mst.push_back(cheapest[cur]);
 							ans += graph->edges[cheapest[cur]].cost;
+							
 							NumEdge += 1;
 						}
 					}
@@ -217,6 +218,7 @@ double BoruvkaPaSolver::CalcMST()
 
 	if (world_rank != 0) { return -2; }
 
+	
 	return ans;
 }
 

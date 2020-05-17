@@ -23,7 +23,8 @@ int main()
    // cout << gie->getGraphName() << endl;
 
     BoruvkaPaSolver bor(gie);
-    bor.CalcMST();
+   cout<< bor.CalcMST()<<endl;
+   bor.printMST();
     //KruskalSolver Kruskal(gie);
     //cout << Kruskal.CalcMST() << endl;
     //Kruskal.printMST();

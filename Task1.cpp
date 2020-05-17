@@ -9,18 +9,18 @@ using namespace std;
 
 int main()
 {
-    string filename = "test_in.txt";
+    string filename = "Graph_Input_test.txt";
     GraphInEdge* gie = new GraphInEdge();
-    // gie->ReadFile(filename);
-    gie->addEdge(Edge(1, 2, 2));
-    gie->addEdge(Edge(2, 3, 1));
-    gie->addEdge(Edge(3, 1, 2));
-    gie->addEdge(Edge(4, 5, 1));
-    gie->addEdge(Edge(1, 3, 3));
-    gie->addEdge(Edge(1, 4, 1));
-    cout << gie->getGraphName() << endl;
+     gie->ReadFile(filename);
+    //gie->addEdge(Edge(1, 2, 2));
+    //gie->addEdge(Edge(2, 3, 1));
+    //gie->addEdge(Edge(3, 1, 2));
+    //gie->addEdge(Edge(4, 5, 1));
+    //gie->addEdge(Edge(1, 3, 3));
+    //gie->addEdge(Edge(1, 4, 1));
+    //cout << gie->getGraphName() << endl;
 
-    KruskalSolver Kruskal(gie);
+    //KruskalSolver Kruskal(gie);
     //cout << Kruskal.CalcMST() << endl;
     //Kruskal.printMST();
 
@@ -30,12 +30,13 @@ int main()
     //prim.printMST();
     //
     BoruvkaSolver boruv(gie);
-    PrimSolver prim(gie);
-
-    cout << boruv.CalcMST() << prim.CalcMST() << Kruskal.CalcMST() << endl;
-    prim.printMST();
+    cout << boruv.CalcMST() << endl;
     boruv.printMST();
-    Kruskal.printMST();
+
+
+	//PrimSolver prim(gie);
+    //cout <<  prim.CalcMST()  << endl;
+    //prim.printMST();
     return 0;
 
 }
