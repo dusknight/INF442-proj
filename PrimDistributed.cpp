@@ -58,38 +58,48 @@ double PrimPaSolver::CalcMST()
 		costs[i] = min(graph->getEdgeCost(1, i), graph->getEdgeCost(i, 1));
 	}
 
+	
+	
 	MPI_Init(NULL, NULL);
 
 	// 通过调用以下方法来得到所有可以工作的进程数量
 	int world_size;
 	MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-	assert(world_size > 1);
+	//assert(world_size > 1);
 	// 得到当前进程的秩
 	int world_rank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
-	int number_per_process[2]; //分配给每个进程指定的处理顶点
+	int number_per_process[2]{0,0}; //分配给每个进程指定的处理顶点
 	if (world_rank != world_size - 1) 
 	{
 		number_per_process[0] = world_rank * (int)(taille / world_size) + 1;
-		number_per_process[1] = number_per_process[0] + (int)(taille / world_size);
+		number_per_process[1] = number_per_process[0] + (int)(taille / world_size)-1;
 	}
 	if (world_rank == world_size - 1)
 	{
 		number_per_process[0] = world_rank * (int)(taille / world_size) + 1;
 		number_per_process[1] = taille;
 	}
+
+	//cout << number_per_process[0] << " " << number_per_process[1] << endl;
 	MPI_Barrier(MPI_COMM_WORLD); //Wait until all processes are ready
-
-
+	
+	//cout << "HEre" << endl;
 	int count = 1; // 计数已加入的定点数，初始化为1
+
+	
 	while (count < taille) //控制循环
 	{
-		count += 1; 
+		count += 1;
+
+		
+		//cout << count << " woshi " << world_rank << endl;
 		int cur = 1; //初始化记录要加入的节点的变量
 		int minor = INF; //当前进程距离已知MST较小距离
 		int in_which_process = world_rank; //记录数据来源的进程
 
+		
 		for (int j = number_per_process[0]; j <= number_per_process[1]; j++) //找到当前进程中未加入的节点中距离当前已得森林中最近的点
 		{
 			if ((!visited[j]) && costs[j] < minor)
@@ -99,8 +109,11 @@ double PrimPaSolver::CalcMST()
 			}
 		}
 
-		int sub_data[3] = {cur, minor, in_which_process}; //存储当前进程的最优顶点，其cost，和所在进程
+		//cout << "round " << count - 1 <<"peiti "<< minor << endl;
 
+		
+		//xcout << "Pro"<<world_rank<<" a " << cur << endl;
+		int sub_data[3] = {cur, minor, in_which_process}; //存储当前进程的最优顶点，其cost，和所在进程
 		MPI_Barrier(MPI_COMM_WORLD); //主进程准备收集信息
 		int* sub_datas = NULL; //主进程收集信息缓冲区
 		if (world_rank == 0)
@@ -111,7 +124,7 @@ double PrimPaSolver::CalcMST()
 
 
 		MPI_Barrier(MPI_COMM_WORLD);
-
+		
 		if (world_rank == 0) //主进程从收进来的数据中找出到已有分支最近的点
 		{
 			int cur_0 = sub_datas[0]; //初始化
@@ -120,7 +133,7 @@ double PrimPaSolver::CalcMST()
 			for (int i = 0; i < world_size; i++)
 			{
 				auto ind = sub_datas[i * 3];
-				if (!visited[ind] && costs[ind] < minor_0)
+				if (!visited[ind] && sub_datas[1 + i * 3] < minor_0)
 				{
 					cur_0 = ind;
 					minor_0 = sub_datas[1 + i * 3];
@@ -130,13 +143,18 @@ double PrimPaSolver::CalcMST()
 			sub_data[0] = cur_0;
 			sub_data[1] = minor_0;
 			sub_data[2] = in_which_proc;
+			//cout << 'A' << minor_0 << endl;
 		}
 
 		MPI_Barrier(MPI_COMM_WORLD);
 		
 		MPI_Bcast(sub_data, 3, MPI_INT, 0, MPI_COMM_WORLD); //信息传回各进程
 
+
+		
 		MPI_Barrier(MPI_COMM_WORLD);
+
+		//cout << count << " woshi " << world_rank <<" da"<<sub_data[0]<< endl;
 		
 		if (sub_data[1] == INF)
 		{
@@ -149,24 +167,30 @@ double PrimPaSolver::CalcMST()
 		
 
 		int edge_number = 0;//初始化, 记录要加入的边的指标
+		
 		MPI_Barrier(MPI_COMM_WORLD);
-		if (world_rank = sub_data[2]) //在管理此最近顶点的进程上寻找其对应加入的边
+		//cout << "talaizhao " << sub_data[2] << " WORLD " << world_rank << endl;
+	
+		if (world_rank == sub_data[2]) //在管理此最近顶点的进程上寻找其对应加入的边
 		{
 			if (graph->getEdgeCost(sub_data[0], closest[sub_data[0]])  >  graph->getEdgeCost(closest[sub_data[0]], sub_data[0])) // 因为是有向图要选择加入的边的方向
 			{
 				edge_number = graph->findEdge(closest[sub_data[0]], sub_data[0]);
+				//cout << "AAA" << endl;
 			}
 			else
 			{
 				edge_number = graph->findEdge(sub_data[0], closest[sub_data[0]]);
+				//cout << "BBB" << endl;
 			}
 			
 			//MSTedges.push_back(edge_number);
 			//MSTCost += sub_data[1];
 		}
-
+		
 		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Bcast(&edge_number, 1, MPI_INT, sub_data[2], MPI_COMM_WORLD); //广播要加入的边的指标
+		//cout << "ZHEGE edge " << edge_number << endl;
 		MSTedges.push_back(edge_number);
 		ans += sub_data[1];
 		MPI_Barrier(MPI_COMM_WORLD);
@@ -180,6 +204,7 @@ double PrimPaSolver::CalcMST()
 			}
 		}
 		MPI_Barrier(MPI_COMM_WORLD);
+		//cout << "heelo end" <<"woshi"<<world_rank<< endl;
 	}
 	MPI_Finalize();
 

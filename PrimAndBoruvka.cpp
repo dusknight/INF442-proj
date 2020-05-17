@@ -231,9 +231,6 @@ double BoruvkaSolver::CalcMST()
                 }
             }
         }
-
-
-
         vector<int> temp2 = {};
         for (int i = 0; i < graph->getVertSize() + 1; i++)
         {
