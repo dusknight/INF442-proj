@@ -9,8 +9,8 @@
 #include<cassert>
 
 // #define NONMPI
-const bool PRINT_MSG = true;
-const bool PRINT_MPI_LOG_DETAIL = true;
+const bool PRINT_MSG = false;
+const bool PRINT_MPI_LOG_DETAIL = false;
 using namespace std;
 
 int GHSNode::assign_id(int id_rank, int num_process)
@@ -447,7 +447,7 @@ void GHSMPI::exec_send_recv()
 
 void GHSMPI::init()
 {
-	string filename = "test_in.txt";
+	string filename = "Graph_Input_test.txt";
 	// comm.init(0, NULL);
 	comm.init(0, NULL); // MPI_Init
 	comm.commitType(NULL);

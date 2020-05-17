@@ -25,8 +25,8 @@ int main()
 
     PrimPaSolver pps(gie);
     //pps.CalcMST();
-  
-    cout << pps.CalcMST() << endl;
+    pps.CalcMST();
+    //cout << pps.CalcMST() << endl;
     //pps.printMST();
 	
     //KruskalSolver Kruskal(gie);
