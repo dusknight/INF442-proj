@@ -1,23 +1,32 @@
 #include "KruskalClustering.hpp"
 
 int main(int argc, char** argv) {
-	if (argc != 6) {
-		std::cerr << "Usage: " << argv[0] << " csv nb_clusters dim x_column y_column" << std::endl;
+	if (argc != 7) {
+		std::cerr << "Usage: " << argv[0] << " csv search_start search_end dim x_column y_column" << std::endl;
 		std::exit(1);
 	}
 	std::string csv_filename = argv[1];
-	int nb_clusters = std::stoi(argv[2]);
-	int dim = std::stoi(argv[3]);
-	int x_column = std::stoi(argv[4]);
-	int y_column = std::stoi(argv[5]);
+	int search_start = std::stoi(argv[2]);
+	int search_end = std::stoi(argv[3]);
+	int dim = std::stoi(argv[4]);
+	int x_column = std::stoi(argv[5]);
+	int y_column = std::stoi(argv[6]);
 
-	KruskalClustering kcl(dim, nb_clusters), kcl2(dim, nb_clusters);
-	kcl.ReadFile(csv_filename, nb_clusters, x_column, y_column);
-	kcl.kMeansSolve();
+	assert(search_start <= search_end);
+	int max_k=-1; double max_sihouette=-1;
+	for (int nb_clusters = search_start; nb_clusters <= search_end; nb_clusters++) {
+		KruskalClustering kcl(dim, nb_clusters);
+		kcl.ReadFile(csv_filename, nb_clusters, x_column, y_column);
+		kcl.kMSTsolve(false);
+		// kcl.pureKMSTsolve(false);
 
-	kcl2.ReadFile(csv_filename, nb_clusters, x_column, y_column);
-	kcl2.kMSTsolve();
-
+		double sihouette = kcl.getSilhouette();
+		cout << "[   ] k = " << nb_clusters << ",\tSihouette = " << sihouette << endl;
+		if (sihouette > max_sihouette) {
+			max_sihouette = sihouette;
+			max_k = nb_clusters;
+		}
+	}
+	cout << "[---] Best parameter : nb_cluster = " << max_k << ",\tSihouette = " << max_sihouette << endl;
 	return 0;
-	//return test_TD3(argc, argv);
 }

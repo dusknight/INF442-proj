@@ -13,10 +13,10 @@ int main(int argc, char** argv) {
 
 	KruskalClustering kcl(dim, nb_clusters), kcl2(dim, nb_clusters);
 	kcl.ReadFile(csv_filename, nb_clusters, x_column, y_column);
-	kcl.kMeansSolve();
+	kcl.kMeansSolve(true);
 
 	kcl2.ReadFile(csv_filename, nb_clusters, x_column, y_column);
-	kcl2.kMSTsolve();
+	kcl2.kMSTsolve(true);
 
 	return 0;
 	//return test_TD3(argc, argv);
