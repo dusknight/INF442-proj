@@ -48,33 +48,33 @@ double KruskalSolver::CalcMST()
 	 * return: sum of weights of MST
 	 */
 	MSTedges.clear();
-	vector<int> father(graph->getVertSize() + 1); //并查集数组, starts from 1 to vertSize+1
-	double ans = 0; //所求边权之和
-	int NumEdge = 0; //记录最小生成树边数
-	for (int i = 0; i < graph->getVertSize() + 1; i++) //初始化并查集
+	vector<int> father(graph->getVertSize() + 1); //Initialize UnionFind, starts from 1 to vertSize+1
+	double ans = 0; //sum of weights
+	int NumEdge = 0; //Size of SMT
+	for (int i = 0; i < graph->getVertSize() + 1; i++) 
 		father[i] = i;
-	std::sort(graph->edges.begin(), graph->edges.end(), Edge::cmp); //所有边按边权从小到大排序
-	for (int i = 0; i < graph->getEdgeSize(); ++i) //枚举所有边
+	std::sort(graph->edges.begin(), graph->edges.end(), Edge::cmp); //Sort edges
+	for (int i = 0; i < graph->getEdgeSize(); ++i) //traverse edge
 	{
-		int faU = findFather(father, graph->edges[i].u); //查询端点u所在集合的根结点
-		int faV = findFather(father, graph->edges[i].v); //查询端点v所在集合的根结点
+		int faU = findFather(father, graph->edges[i].u); 
+		int faV = findFather(father, graph->edges[i].v); 
 		if (faU != faV)
 		{
-			//如果不在一个集合中
-			father[faU] = faV; //合并集合（相当于把测试边加入到最小生成树）
+			
+			father[faU] = faV; //Union the component
 			ans += graph->edges[i].cost;
-			NumEdge++; //当前生成树边数加1
+			NumEdge++; 
 			MSTedges.push_back(i);
-			if (NumEdge == graph->getVertSize() - 1) //边数等于顶点数减1，算法结束
+			if (NumEdge == graph->getVertSize() - 1) //The algo end
 				break;
 		}
 	}
-	if (NumEdge != graph->getVertSize() - 1) //无法连通时返回-1
+	if (NumEdge != graph->getVertSize() - 1) //Not connected
 		return -1;
 	else
 	{
 		MSTCost = ans;
-		return ans; //返回最小生成树边权之和
+		return ans; //sum of weights of SMT
 	}
 }
 
