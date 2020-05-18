@@ -25,9 +25,10 @@ public:
 	void set_k(const int _k) { k = _k; };
 	void set_dim(const int _dim) { dim = _dim; };
 	void ReadFile(string filename, int nb_clusters, int x_column, int y_column);
-	void kMSTsolve();
-	void kMeansSolve();
-	void compareSilhouette();
+	void kMSTsolve(bool with_output);
+	void pureKMSTsolve(bool with_output);
+	void kMeansSolve(bool with_output);
+	double getSilhouette();
 };
 
 #endif // INF442_P3_KRUSKALCLUSTERING_HPP

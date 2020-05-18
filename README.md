@@ -11,8 +11,8 @@ TODO
 ----
 - [x] Task 1
 - [x] Task 2
-- [ ] Task 3
-- [ ] Task 4
+- [x] Task 3
+- [x] Task 4
 - [x] TD3 transplantation
-- [x]	Task 5
-- [ ] Task 6
+- [x] Task 5
+- [x] Task 6
