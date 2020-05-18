@@ -69,8 +69,11 @@ double BoruvkaPaSolver::CalcMST()
 		number_per_process[1] = TailleEdges - 1;
 	}
 	MPI_Barrier(MPI_COMM_WORLD); //Wait until all processes are ready
-	cout << "From " << number_per_process[0] << " to " << number_per_process[1] << endl;
+	//cout << "THE EDGES EACH PROCESS TREAT ARE" << endl;
+	//cout << "From " << number_per_process[0] << " to " << number_per_process[1] << endl;
 
+
+	int father_no_use = 0;
 	while (NumCompos > 2) //当分支数目大于等于2
 	{
 		//cout << "zhemeduobian "<<NumEdge << " World " <<world_rank<<endl;
@@ -79,10 +82,12 @@ double BoruvkaPaSolver::CalcMST()
 		{
 			temp.push_back(findFather(father, i));
 		}
+
+		
 		unordered_set<int> setcomponents(temp.begin(), temp.end()); //存储目前的分支
 		vector<int> components(setcomponents.begin(), setcomponents.end());
 		NumCompos = components.size();
-		//cout << NumCompos << endl;
+		//cout << NumCompos<<"COMPONUMBER" << endl;
 
 		for (int i = 0; i < graph->getVertSize() + 1; i++) { cheapest[i] = -1; } //初始化每个components在当前步要加入的边为 -1
 		for (int i = number_per_process[0]; i < number_per_process[1] + 1; i++) //每个进程遍历边
@@ -118,7 +123,7 @@ double BoruvkaPaSolver::CalcMST()
 				}
 			}
 		}
-
+		//每个进程遍历边结束
 		MPI_Barrier(MPI_COMM_WORLD);
 
 		vector<int> CollCheapest;
@@ -134,44 +139,55 @@ double BoruvkaPaSolver::CalcMST()
 		MPI_Gather(cheapest.data(), graph->getVertSize() + 1, MPI_INT,
 		           CollCheapest.data(), graph->getVertSize() + 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-
+		
 		if (world_rank == 0) //主进程找出最便宜的边
 		{
+			//cout << "SIZE " << CollCheapest.size() << endl;
 			for (int i = 0; i < NumCompos; i++)
 			{
 				int cur = components[i]; //现在考虑的component
+				cur = findFather(father, cur);
+				//cout << cur << "CUR" << endl;
+				
 				if (cur != 0)
 				{
-					for (int i = 0; i < world_rank; i++) //遍历每个进程传回来的数据
+					for (int i = 0; i < world_size; i++) //遍历每个进程传回来的数据
 					{
-						int faU = findFather(
-							father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].u); //查询端点u所在集合的根结点
-						int faV = findFather(
-							father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].v);
-						int cost = graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].cost;
-						if (faU != faV)
-						{
-							if (cheapest[faU] == -1) //work on the component of U
+						//cout << "INDEX "<< CollCheapest[cur + i * (graph->getVertSize() + 1)] <<"ANTOHER"<< cur + i * (graph->getVertSize() + 1) << endl;
+						if (CollCheapest[cur + i * (graph->getVertSize() + 1)] != -1) { //注意由于有些子图不连通会导致一些component的cheapest的边还是-1
+							int faU = findFather(
+								father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].u); //查询端点u所在集合的根结点
+							int faV = findFather(
+								father, graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].v);
+							int cost = graph->edges[CollCheapest[cur + i * (graph->getVertSize() + 1)]].cost;
+							//cout << world_rank << " RANK" << endl;
+
+							//cout <<cur + i * (graph->getVertSize() + 1) << "A" << endl;
+
+							if (faU != faV)
 							{
-								cheapest[faU] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
-							}
-							else
-							{
-								if (cost < graph->edges[cheapest[faU]].cost)
+								if (cheapest[faU] == -1) //work on the component of U
 								{
 									cheapest[faU] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
 								}
-							}
+								else
+								{
+									if (cost < graph->edges[cheapest[faU]].cost)
+									{
+										cheapest[faU] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
+									}
+								}
 
-							if (cheapest[faV] == -1) //work on the component of V
-							{
-								cheapest[faV] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
-							}
-							else
-							{
-								if (cost < graph->edges[cheapest[faV]].cost)
+								if (cheapest[faV] == -1) //work on the component of V
 								{
 									cheapest[faV] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
+								}
+								else
+								{
+									if (cost < graph->edges[cheapest[faV]].cost)
+									{
+										cheapest[faV] = CollCheapest[cur + i * (graph->getVertSize() + 1)];
+									}
 								}
 							}
 						}
@@ -179,6 +195,8 @@ double BoruvkaPaSolver::CalcMST()
 				}
 			}
 
+			
+			
 			for (int i = 0; i < NumCompos; i++) //把每个成分最近的边加入树中，并收缩边
 			{
 				int cur = components[i];
@@ -186,15 +204,18 @@ double BoruvkaPaSolver::CalcMST()
 				{
 					if (cheapest[cur] != -1)
 					{
+						//cout << "KKK" << endl;
 						int Indu = findFather(father, graph->edges[cheapest[cur]].u);
 						int Indv = findFather(father, graph->edges[cheapest[cur]].v);
+						//cout << graph->edges[cheapest[cur]].u << "AND" << graph->edges[cheapest[cur]].v << endl;
 						father[Indu] = Indv;
+						father_no_use = findFather(father, Indu);
 						if (!is_element_in_vector(edges_mst, cheapest[cur])) // 确认之前未加入，Boruvka算法的每一轮可能加入重复的边。
 						{
 							MSTedges.push_back(cheapest[cur]);
 							edges_mst.push_back(cheapest[cur]);
 							ans += graph->edges[cheapest[cur]].cost;
-							
+							//cout << "A "<<Indu<<" B "<<Indv << endl;
 							NumEdge += 1;
 						}
 					}
@@ -205,7 +226,7 @@ double BoruvkaPaSolver::CalcMST()
 		MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Bcast(father.data(), graph->getVertSize() + 1, MPI_INT, 0, MPI_COMM_WORLD); //广播father到各个进程
 		MPI_Barrier(MPI_COMM_WORLD);
-
+		
 		vector<int> temp2 = {};
 		for (int i = 0; i < graph->getVertSize() + 1; i++) { temp2.push_back(findFather(father, i)); }
 		std::unordered_set<int> setcomponents2(temp2.begin(), temp2.end()); //更新存储目前的分支
@@ -216,9 +237,11 @@ double BoruvkaPaSolver::CalcMST()
 	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_Finalize();
 
-	if (world_rank != 0) { return -2; }
+	if (world_rank != 0) 
+	{// cout << "NOT MAIN PROCESS"<<endl;
+		return -2; }
 
-	
+	//cout << "THIS IS THE MAIN PROCESS" << "AND ANS IS "<<ans<<endl;
 	return ans;
 }
 
