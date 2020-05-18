@@ -7,6 +7,7 @@
 
 #include<iostream>
 #include<cassert>
+#include <ctime>
 
 // #define NONMPI
 const bool PRINT_MSG = false;
@@ -522,11 +523,12 @@ void GHSMPI::init(string fname)
 
 void GHSMPI::run_loop()
 {
+	
 	if (!ready) {
 		cerr << "[ERROR] Process is not ready. Initialize it first." << endl;
 		return;
 	}
-
+	clock_t start = clock();
 	comm.barrier(); // MPI_Barrier synchonolise
 	int beginning_node = nodes.begin()->first;
 
@@ -545,8 +547,11 @@ void GHSMPI::run_loop()
 	cout << "[INFO] --- process calculation finished. id=" << rank << endl;
 	print_node_states();
 	comm.barrier();
+	clock_t end = clock();
 	finalize();
-
+	
+	
+	cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC) << " seconds" << endl;
 }
 
 void GHSMPI::msg_handler(GHSmsg msg)
