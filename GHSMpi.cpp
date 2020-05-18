@@ -456,9 +456,9 @@ void GHSMPI::exec_send_recv()
 	}
 }
 
-void GHSMPI::init()
+void GHSMPI::init(string fname)
 {
-	string filename = "Graph_Input_test.txt";
+	string filename = fname;
 	// comm.init(0, NULL);
 	comm.init(0, NULL); // MPI_Init
 	comm.commitType(NULL);

@@ -5,7 +5,7 @@ int main(int argc, char* argv[]) {
 	//gie.ReadFile("test_in.txt");
 	
 	GHSMPI ghsmpi;
-	ghsmpi.init();
+	ghsmpi.init("test_in.txt");
 	ghsmpi.run_loop();
 
 	return 0;

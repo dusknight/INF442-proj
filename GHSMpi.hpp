@@ -287,7 +287,7 @@ public:
 	void emplace_recv_queue(GHSmsg msg);
 	void exec_send_recv();
 
-	void init();
+	void init(string fname);
 	void run_loop();
 	void msg_handler(GHSmsg msg);
 	void finalize();

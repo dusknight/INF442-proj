@@ -6,12 +6,13 @@
 #include "Kruskal.hpp"
 #include "BoruvkaDistributed.hpp"
 #include <iostream>
+#include<time.h>
 
 using namespace std;
 
 int main()
 {
-    string filename = "test_in.txt";
+    string filename = "8192nodep11.txt";
     GraphInEdge* gie = new GraphInEdge();
      gie->ReadFile(filename);
     //gie->addEdge(Edge(1, 2, 2));
@@ -23,8 +24,12 @@ int main()
    // cout << gie->getGraphName() << endl;
 
     BoruvkaPaSolver bor(gie);
-   cout<< bor.CalcMST()<<endl;
-   bor.printMST();
+    clock_t start = clock();
+    double var = bor.CalcMST();
+    clock_t end = clock();
+   cout<<var<<endl;
+   cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC ) << " seconds"<<endl;
+   //bor.printMST();
     //KruskalSolver Kruskal(gie);
     //cout << Kruskal.CalcMST() << endl;
     //Kruskal.printMST();
