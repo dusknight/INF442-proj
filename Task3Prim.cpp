@@ -1,6 +1,8 @@
 //
 // Created by Mingyu on a random day.
 //
+#include <ctime>
+
 #include "PrimDistributed.hpp"
 #include "Kruskal.hpp"
 #include <iostream>
@@ -12,7 +14,7 @@ using namespace std;
 
 int main()
 {
-    string filename = "Graph_Input_test.txt";
+    string filename = "7499nodep8.txt";
     GraphInEdge* gie = new GraphInEdge();
     gie->ReadFile(filename);
     //gie->addEdge(Edge(1, 2, 2));
@@ -25,7 +27,11 @@ int main()
 
     PrimPaSolver pps(gie);
     //pps.CalcMST();
-    pps.CalcMST();
+    clock_t start = clock();
+    double var = pps.CalcMST();
+    clock_t end = clock();
+    cout << var << endl;
+    cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC) << " seconds" << endl;
     //cout << pps.CalcMST() << endl;
     //pps.printMST();
 	

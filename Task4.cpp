@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	//gie.ReadFile("test_in.txt");
 	
 	GHSMPI ghsmpi;
-	ghsmpi.init("8192nodep11.txt");
+	ghsmpi.init("2048nodep11.txt");
 	/*clock_t start = clock();*/
 	ghsmpi.run_loop();
 	//clock_t end = clock();

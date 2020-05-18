@@ -1,6 +1,8 @@
 //
 // Created by Shikang on 5/9/2020.
 //
+#include <ctime>
+
 #include "PrimAndBoruvka.hpp"
 #include "Kruskal.hpp"
 #include <iostream>
@@ -9,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    string filename = "Graph_Input_test.txt";
+    string filename = "256p11.txt";
     GraphInEdge* gie = new GraphInEdge();
      gie->ReadFile(filename);
     //gie->addEdge(Edge(1, 2, 2));
@@ -29,9 +31,13 @@ int main()
     //cout << prim.CalcMST() << endl;
     //prim.printMST();
     //
-    BoruvkaSolver boruv(gie);
-    cout << boruv.CalcMST() << endl;
-    boruv.printMST();
+    PrimSolver prim(gie);
+    clock_t start = clock();
+    double var = prim.CalcMST();
+    clock_t end = clock();
+    cout << var << endl;
+    cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC) << " seconds" << endl;
+    //boruv.printMST();
 
 
 	//PrimSolver prim(gie);
