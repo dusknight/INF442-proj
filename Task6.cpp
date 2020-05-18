@@ -1,3 +1,5 @@
+// grid search for best cluster nbs
+
 #include "KruskalClustering.hpp"
 
 int main(int argc, char** argv) {
