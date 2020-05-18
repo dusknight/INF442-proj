@@ -3,7 +3,6 @@
 //
 
 #include "GHSMpi.hpp"
-#include "GraphMpi.hpp"
 
 #include<iostream>
 #include<cassert>
