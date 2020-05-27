@@ -181,8 +181,8 @@ double PrimPaSolver::CalcMST()
 				//cout << "BBB" << endl;
 			}
 			
-			//MSTedges.push_back(edge_number);
-			//MSTCost += sub_data[1];
+			MSTedges.push_back(edge_number);
+			MSTCost += sub_data[1];
 		}
 		
 		MPI_Barrier(MPI_COMM_WORLD);

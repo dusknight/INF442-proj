@@ -14,6 +14,10 @@ int main()
     string filename = "256p11.txt";
     GraphInEdge* gie = new GraphInEdge();
      gie->ReadFile(filename);
+     auto test = gie->createAdjmatrix();
+	
+
+     //cout << test[1][] << endl;
     //gie->addEdge(Edge(1, 2, 2));
     //gie->addEdge(Edge(2, 3, 1));
     //gie->addEdge(Edge(3, 1, 2));

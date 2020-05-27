@@ -142,6 +142,7 @@ void GraphInEdge::ReadFile(string filename)
 vector<vector<Edge>> GraphInEdge::toAdjecentList()
 {
 	vector<vector<Edge>> vve;
+	
 	for (int i = 0; i < vertSize+1; i++) { // ATTENTION: vertId starts from 1
 		vector<Edge> ve;
 		vve.push_back(ve);
@@ -152,28 +153,46 @@ vector<vector<Edge>> GraphInEdge::toAdjecentList()
 		int to = ie->v;
 		vve[from].push_back(*ie);
 	}
+	//this->adjmatrix = vve;
 	return vve;
 }
+
+vector<vector<int> > GraphInEdge::createAdjmatrix()
+{
+	vector<vector<int> > newOne(vertSize+1, vector<int>(vertSize+1, INF));
+	for(auto ie = edges.begin(); ie!=edges.end(); ie++)
+	{
+		int from = ie->u;
+		int to = ie->v;
+		newOne[from][to] = ie->cost;
+	}
+
+	adjmatrix = newOne;
+	return newOne;
+	
+}
+
 
 double GraphInEdge::getEdgeCost(int u, int v)
 {
 	// TODO
-	int l = this->edges.size();
-	int i = 0;
-	while (i < l)
-	{
-		if (edges[i].u == u)
-		{
-			if (edges[i].v == v)
-			{
-				//std::cout << "The edge is located in " << i << "th position in edges"<<std::endl;
-				return edges[i].cost;
-			}
-		}
-		i += 1;
-	}
+	//int l = this->edges.size();
+	//int i = 0;
+	//while (i < l)
+	//{
+	//	if (edges[i].u == u)
+	//	{
+	//		if (edges[i].v == v)
+	//		{
+	//			//std::cout << "The edge is located in " << i << "th position in edges"<<std::endl;
+	//			return edges[i].cost;
+	//		}
+	//	}
+	//	i += 1;
+	//}
 
-	return INF;
+	//return INF;
+	return adjmatrix[u][v];
 }
 
 

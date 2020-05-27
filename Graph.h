@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-constexpr auto INF = 1000000;
+constexpr auto INF = 10000000;
 
 using namespace std;
 
@@ -28,7 +28,7 @@ protected:
 	int edgeSize;
 public:
 	Graph();
-	//    ~Graph();
+	//    ~Graph(); 
 	int getVertSize() const;
 	int getEdgeSize() const;
 	virtual void ReadFile(string filename) = 0;
@@ -42,6 +42,7 @@ class GraphInEdge :public Graph {
 protected:
 	vector<Edge> edges;
 	string graphName;
+	vector < vector<int>> adjmatrix;
 	friend class KruskalSolver;
 	friend class PrimSolver;
 	friend class BoruvkaSolver;
@@ -55,6 +56,7 @@ public:
 	string getGraphName() const;
 	double getEdgeCost(int u, int v) override;
 	int findEdge(int u, int v);
+	vector<vector<int> > createAdjmatrix();
 	void ReadFile(string filename) override;
 	vector<vector<Edge>> toAdjecentList();
 };
