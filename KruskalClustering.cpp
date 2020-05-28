@@ -98,6 +98,7 @@ void KruskalClustering::pureKMSTsolve(bool with_output)
 			// make a new set
 			is->insert(e.u);
 			is->insert(e.v);
+			break;
 		}
 	}
 
@@ -105,6 +106,7 @@ void KruskalClustering::pureKMSTsolve(bool with_output)
 	for (int ic = 0; ic < clusters.size(); ic++) {
 		for (auto ip = clusters[ic].begin(); ip != clusters[ic].end(); ip++) {
 			kMeansSolver.get_point((*ip) - 1).label = ic;
+			// kMeansSolver.get_point((*ip) ).label = ic;
 		}
 	}
 

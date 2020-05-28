@@ -4,8 +4,6 @@ by Shikang DU and Mingyu ZHANG
 
 Project INF442 : Minimum Spanning Trees (MST)
 ---------------------------------------------
-I have no idea about what should be written here. 
-
 
 The data could be downloaded in the following link. 
 https://drive.google.com/file/d/15nQkcy_uBOcLMKkA0rwLuUmNwIA2BQ1L/view?usp=sharing

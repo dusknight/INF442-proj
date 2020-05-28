@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 
 		double sihouette = kcl.getSilhouette();
 		cout << "[   ] k = " << nb_clusters << ",\tSihouette = " << sihouette << endl;
-		if (sihouette > max_sihouette) {
+		if (sihouette >= max_sihouette) {
 			max_sihouette = sihouette;
 			max_k = nb_clusters;
 		}
