@@ -163,32 +163,32 @@ double PrimPaSolver::CalcMST()
 		visited[sub_data[0]] = true; //Record Visited
 		
 
-		int edge_number = 0;//Initiliaze
+		//int edge_number = 0;//Initiliaze
 		
 		MPI_Barrier(MPI_COMM_WORLD);
 		//cout << "talaizhao " << sub_data[2] << " WORLD " << world_rank << endl;
 	
-		if (world_rank == sub_data[2]) //The corresponding process update
-		{
-			if (graph->getEdgeCost(sub_data[0], closest[sub_data[0]])  >  graph->getEdgeCost(closest[sub_data[0]], sub_data[0])) // Choose the direction to add
-			{
-				edge_number = graph->findEdge(closest[sub_data[0]], sub_data[0]);
-				//cout << "AAA" << endl;
-			}
-			else
-			{
-				edge_number = graph->findEdge(sub_data[0], closest[sub_data[0]]);
-				//cout << "BBB" << endl;
-			}
-			
-			MSTedges.push_back(edge_number);
-			MSTCost += sub_data[1];
-		}
-		
-		MPI_Barrier(MPI_COMM_WORLD);
-		MPI_Bcast(&edge_number, 1, MPI_INT, sub_data[2], MPI_COMM_WORLD); //Broadcast the index founded of the edge
-		//cout << "ZHEGE edge " << edge_number << endl;
-		MSTedges.push_back(edge_number);
+		//if (world_rank == sub_data[2]) //The corresponding process update
+		//{
+		//	if (graph->getEdgeCost(sub_data[0], closest[sub_data[0]])  >  graph->getEdgeCost(closest[sub_data[0]], sub_data[0])) // Choose the direction to add
+		//	{
+		//		edge_number = graph->findEdge(closest[sub_data[0]], sub_data[0]);
+		//		//cout << "AAA" << endl;
+		//	}
+		//	else
+		//	{
+		//		edge_number = graph->findEdge(sub_data[0], closest[sub_data[0]]);
+		//		//cout << "BBB" << endl;
+		//	}
+		//	
+		//	MSTedges.push_back(edge_number);
+		//	MSTCost += sub_data[1];
+		//}
+		//
+		//MPI_Barrier(MPI_COMM_WORLD);
+		//MPI_Bcast(&edge_number, 1, MPI_INT, sub_data[2], MPI_COMM_WORLD); //Broadcast the index founded of the edge
+		////cout << "ZHEGE edge " << edge_number << endl;
+		//MSTedges.push_back(edge_number);
 		ans += sub_data[1];
 		MPI_Barrier(MPI_COMM_WORLD);
 

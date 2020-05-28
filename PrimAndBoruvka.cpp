@@ -86,16 +86,16 @@ double PrimSolver::CalcMST()
         }
 
         visited[cur] = true;
-        int edge_number = 0;
-        if (graph->getEdgeCost(cur, closest[cur]) > graph->getEdgeCost(closest[cur], cur)) // Choose the direction of the edge to add
-        {
-            edge_number = graph->findEdge(closest[cur], cur);
-        }
-        else
-        {
-            edge_number = graph->findEdge(cur, closest[cur]);
-        }
-        MSTedges.push_back(edge_number);
+        //int edge_number = 0;
+        //if (graph->getEdgeCost(cur, closest[cur]) > graph->getEdgeCost(closest[cur], cur)) // Choose the direction of the edge to add
+        //{
+        //    edge_number = graph->findEdge(closest[cur], cur);
+        //}
+        //else
+        //{
+        //    edge_number = graph->findEdge(cur, closest[cur]);
+        //}
+        //MSTedges.push_back(edge_number);
 
         ans += minor;
         for (int j = 1; j < taille + 1; j++) //Update Cost

@@ -12,9 +12,10 @@ using namespace std;
 
 int main()
 {
-    string filename = "8192nodep11.txt";
+    string filename = "4096p21.txt";
     GraphInEdge* gie = new GraphInEdge();
      gie->ReadFile(filename);
+     auto test = gie->createAdjmatrix();
     //gie->addEdge(Edge(1, 2, 2));
     //gie->addEdge(Edge(2, 3, 1));
     //gie->addEdge(Edge(3, 1, 2));

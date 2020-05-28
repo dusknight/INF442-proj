@@ -30,5 +30,6 @@ int main(int argc, char** argv) {
 		}
 	}
 	cout << "[---] Best parameter : nb_cluster = " << max_k << ",\tSihouette = " << max_sihouette << endl;
+	
 	return 0;
 }

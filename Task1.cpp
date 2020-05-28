@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    string filename = "256p11.txt";
+    string filename = "2560p22.txt";
     GraphInEdge* gie = new GraphInEdge();
      gie->ReadFile(filename);
      auto test = gie->createAdjmatrix();
@@ -35,9 +35,9 @@ int main()
     //cout << prim.CalcMST() << endl;
     //prim.printMST();
     //
-    PrimSolver prim(gie);
+    BoruvkaSolver solver(gie);
     clock_t start = clock();
-    double var = prim.CalcMST();
+    double var = solver.CalcMST();
     clock_t end = clock();
     cout << var << endl;
     cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC) << " seconds" << endl;

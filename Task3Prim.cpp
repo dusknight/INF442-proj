@@ -14,7 +14,7 @@ using namespace std;
 
 int main()
 {
-    string filename = "32p11.txt";
+    string filename = "4096p21.txt";
     GraphInEdge* gie = new GraphInEdge();
     gie->ReadFile(filename);
     //gie->addEdge(Edge(1, 2, 2));
@@ -25,15 +25,15 @@ int main()
     //gie->addEdge(Edge(1, 4, 1));
    // cout << gie->getGraphName() << endl;
    //
-    auto test = gie->toAdjecentList();
+    auto test = gie->createAdjmatrix();
 
     //cout << test[2][3].u << endl;
-    PrimPaSolver pps(gie);
+    PrimPaSolver solver(gie);
     //pps.CalcMST();
     clock_t start = clock();
-    //double var = pps.CalcMST();
+    double var = solver.CalcMST();
     clock_t end = clock();
-    //cout << var << endl;
+    cout << var << endl;
     cout << "It spend " << (end - start) * 1.0 / (CLOCKS_PER_SEC) << " seconds" << endl;
     //cout << pps.CalcMST() << endl;
     //pps.printMST();
