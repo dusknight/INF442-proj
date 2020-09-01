@@ -6,12 +6,13 @@
 #define INF442_P3_BoruvkaDISTRIBUTED_HPP
 
 #include "Graph.h"
-class BoruvkaPaSolver :public MSTSolver {
-private:
+class BoruvkaPaSolver : public MSTSolver {
+   private:
     GraphInEdge* graph;
     vector<int> MSTedges;
     double MSTCost;
-public:
+
+   public:
     BoruvkaPaSolver();
     ~BoruvkaPaSolver();
     BoruvkaPaSolver(GraphInEdge* graph);
@@ -20,6 +21,4 @@ public:
     void printMST() override;
 };
 
-
-
-#endif //INF442_P3_BoruvkaDISTRIBUTED_HPP
+#endif  // INF442_P3_BoruvkaDISTRIBUTED_HPP

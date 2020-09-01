@@ -8,12 +8,11 @@
 #include <string>
 
 class DataLoader {
-private:
+   private:
     String filename;
-public:
-    string readGraph
 
+   public:
+    String readGraph;
 };
 
-
-#endif //INF442_P3_DATALOADER_H
+#endif  // INF442_P3_DATALOADER_H

@@ -7,12 +7,13 @@
 
 #include "Graph.h"
 
-class KruskalSolver :public MSTSolver {
-private:
+class KruskalSolver : public MSTSolver {
+   private:
     GraphInEdge* graph;
     vector<int> MSTedges;
     double MSTCost;
-public:
+
+   public:
     KruskalSolver();
     ~KruskalSolver();
     KruskalSolver(GraphInEdge* graph);
@@ -24,5 +25,4 @@ public:
     vector<Edge> getMSTedges();
 };
 
-
-#endif //INF442_P3_KRUSKAL_HPP
+#endif  // INF442_P3_KRUSKAL_HPP

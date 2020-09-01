@@ -6,12 +6,13 @@
 #define INF442_P3_PRIMDISTRIBUTED_HPP
 
 #include "Graph.h"
-class PrimPaSolver :public MSTSolver {
-private:
+class PrimPaSolver : public MSTSolver {
+   private:
     GraphInEdge* graph;
     vector<int> MSTedges;
     double MSTCost;
-public:
+
+   public:
     PrimPaSolver();
     ~PrimPaSolver();
     PrimPaSolver(GraphInEdge* graph);
@@ -20,12 +21,12 @@ public:
     void printMST() override;
 };
 
-//class BoruvkaPaSolver : public MSTSolver {
-//private:
+// class BoruvkaPaSolver : public MSTSolver {
+// private:
 //    GraphInEdge* graph;
 //    vector<int> MSTedges;
 //    double MSTCost;
-//public:
+// public:
 //    BoruvkaPaSolver();
 //    ~BoruvkaPaSolver();
 //    BoruvkaPaSolver(GraphInEdge* graph);
@@ -34,5 +35,4 @@ public:
 //    void printMST() override;
 //};
 
-
-#endif //INF442_P3_PRIMDISTRIBUTED_HPP
+#endif  // INF442_P3_PRIMDISTRIBUTED_HPP
